@@ -3,6 +3,7 @@ node_modules/
 
 # Build outputs
 dist/
+_site/
 src-tauri/target/
 src-tauri/gen/schemas/
 

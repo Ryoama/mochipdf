@@ -1,14 +1,10 @@
-# Tauri デスクトップアプリ側はサイトデプロイに不要
-src/
+# Tauri / Rust 側はサイト配信に不要(重い)
 src-tauri/
-dist/
-.vite/
 
-# Node 依存とパッケージ定義(配布サイトでは使わない)
+# ビルド成果物(Vercel 側で再生成)
+dist/
+_site/
 node_modules/
-package.json
-package-lock.json
-vite.config.js
 
 # CI / IDE / OS
 .github/
@@ -25,3 +21,4 @@ logs/
 *.local
 .env
 .env.local
+.vite/

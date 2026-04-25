@@ -1,38 +1,54 @@
-# もちPDF ランディングサイト
+# もちPDF 配布サイト
 
-Vercel にデプロイする静的なランディングサイトです。アプリ本体(Tauri)の紹介と、GitHub リポ・最新リリース・ソース zip へのダウンロードリンクを提供します。
+Vercel にデプロイする配布サイトです。次の 2 つを 1 つの静的サイトとして配信します。
+
+| パス | 内容 |
+| --- | --- |
+| `/` | ランディングページ(機能紹介 / 実際の画面プレビュー / ダウンロード導線) |
+| `/app/` | 実際のアプリ画面(ブラウザで動くライブデモ) |
 
 ## ディレクトリ構成
 
 ```
-website/
-├── index.html      # ランディングページ
-├── style.css       # スタイル(ブランドカラー)
-├── assets/         # ロゴ・favicon
-└── README.md       # このファイル
+website/                  ← ランディングのソース(本ディレクトリ)
+├── index.html
+├── style.css
+├── assets/               ← ロゴ・favicon
+└── README.md             ← このファイル
+
+scripts/build-site.mjs    ← Vite ビルド成果物 (dist/) と website/ を _site/ に合体
+src/                      ← Tauri webview のソース(Vite root)
+_site/                    ← ビルド成果物(Vercel 配信元、git 管理外)
 ```
 
 ## ローカル確認
 
-ビルド不要の純粋な静的サイトです。任意の静的サーバで確認できます。
-
 ```bash
-# 例: Python の組み込みサーバで確認
-python3 -m http.server 8080 --directory website
-# → http://localhost:8080
+npm install
+npm run build:site
+# → _site/ に書き出される
+
+# 任意の静的サーバで確認
+python3 -m http.server 8080 --directory _site
+# → http://localhost:8080  (ランディング)
+# → http://localhost:8080/app/  (実アプリ)
 ```
 
 ## Vercel へのデプロイ
 
-リポジトリのルートに `vercel.json` と `.vercelignore` を置いており、Tauri アプリ側のファイル(`src/`, `src-tauri/`, `package.json` 等)は配布対象から除外されています。Vercel に GitHub 連携で接続するだけで、この `website/` の中身だけが配信されます。
+リポジトリのルートに `vercel.json` を置いており、以下の流れで自動デプロイされます。
+
+1. `npm ci || npm install` で依存をインストール
+2. `npm run build:site` で `vite build` → `_site/` に landing と `/app/` を合体
+3. `_site/` を静的配信
+
+接続手順:
 
 1. <https://vercel.com/new> から `Ryoama/mochipdf` をインポート
-2. **Framework Preset** は `Other`(`vercel.json` で `framework: null` を指定済み)
-3. **Build / Install Command** はそのまま(`vercel.json` で no-op に上書き済み)
-4. **Output Directory** は `website`(`vercel.json` で指定済み)
-5. Deploy
+2. **Framework Preset** は `Other`(`vercel.json` で `framework: null`)
+3. その他はデフォルトのまま Deploy
 
-> ⚠️ Vercel に Vite アプリ(Tauri webview)をビルドさせないために、`.vercelignore` で `package.json` / `vite.config.js` / `src/` / `src-tauri/` などを除外しています。Vercel はこれらが見えないため Vite を自動検出せず、配布サイト(`website/`)だけがデプロイされます。
+> 💡 ライブデモはブラウザで動作するため、ファイル選択ダイアログとダウンロード経由で操作します。フォルダへの一括保存などデスクトップ専用機能は無効化されます。
 
 CLI から手動デプロイする場合:
 
