@@ -24,13 +24,15 @@ python3 -m http.server 8080 --directory website
 
 ## Vercel へのデプロイ
 
-リポジトリのルートに `vercel.json` を置いており、`outputDirectory` として `website/` を指定しています。Vercel に GitHub 連携で接続するだけで自動デプロイされます。
+リポジトリのルートに `vercel.json` と `.vercelignore` を置いており、Tauri アプリ側のファイル(`src/`, `src-tauri/`, `package.json` 等)は配布対象から除外されています。Vercel に GitHub 連携で接続するだけで、この `website/` の中身だけが配信されます。
 
 1. <https://vercel.com/new> から `Ryoama/mochipdf` をインポート
-2. **Framework Preset** は `Other` を選択(`vercel.json` の設定が優先されます)
-3. **Build Command** / **Install Command** は空欄で OK(静的配信)
+2. **Framework Preset** は `Other`(`vercel.json` で `framework: null` を指定済み)
+3. **Build / Install Command** はそのまま(`vercel.json` で no-op に上書き済み)
 4. **Output Directory** は `website`(`vercel.json` で指定済み)
 5. Deploy
+
+> ⚠️ Vercel に Vite アプリ(Tauri webview)をビルドさせないために、`.vercelignore` で `package.json` / `vite.config.js` / `src/` / `src-tauri/` などを除外しています。Vercel はこれらが見えないため Vite を自動検出せず、配布サイト(`website/`)だけがデプロイされます。
 
 CLI から手動デプロイする場合:
 
