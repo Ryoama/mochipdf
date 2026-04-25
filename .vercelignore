@@ -1,10 +1,21 @@
-# Tauri / Rust 側はサイト配信に不要(重い)
+# Tauri デスクトップアプリ側はサイトデプロイに不要
+src/
 src-tauri/
-
-# ビルド成果物(Vercel 側で再生成)
 dist/
 _site/
+.vite/
+
+# Node 依存とパッケージ定義(配布サイトでは使わない)
 node_modules/
+package.json
+package-lock.json
+vite.config.js
+
+# remake のソース(参照用、配布サイトには含めない)
+"もちPDF_remake/"
+
+# サイトビルド用スクリプト(静的配信なので不要)
+scripts/
 
 # CI / IDE / OS
 .github/
@@ -21,4 +32,3 @@ logs/
 *.local
 .env
 .env.local
-.vite/

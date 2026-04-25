@@ -7,7 +7,6 @@ const LINKS = {
   releases: "https://github.com/Ryoama/mochipdf/releases",
   issues: "https://github.com/Ryoama/mochipdf/issues",
   sourceZip: "https://github.com/Ryoama/mochipdf/archive/refs/heads/main.zip",
-  liveDemo: "./app/",
 };
 
 function Header({ t, lang, setLang }) {
@@ -20,16 +19,12 @@ function Header({ t, lang, setLang }) {
         </a>
         <nav className="nav">
           <a href="#features">{t.nav.features}</a>
-          <a href="#preview">{t.nav.preview || "プレビュー"}</a>
           <a href="#specs">{t.nav.specs}</a>
           <a href="#download">{t.nav.download}</a>
           <a href="#guide">{t.nav.guide}</a>
           <a href="#faq">{t.nav.faq}</a>
         </nav>
         <div className="header-cta">
-          <a className="btn btn-ghost" href={LINKS.liveDemo} target="_blank" rel="noopener">
-            <Ic.Eye size={14}/> {t.header_try || "ブラウザで試す"}
-          </a>
           <div className="lang-switch" role="tablist">
             <button className={lang==='ja'?'on':''} onClick={()=>setLang('ja')}>日本語</button>
             <button className={lang==='en'?'on':''} onClick={()=>setLang('en')}>EN</button>
@@ -37,39 +32,6 @@ function Header({ t, lang, setLang }) {
         </div>
       </div>
     </header>
-  );
-}
-
-function LivePreview({ t }) {
-  const tt = t.preview || {};
-  return (
-    <section className="section" id="preview" style={{paddingTop: '40px'}}>
-      <div className="container">
-        <span className="eyebrow"><span className="num">●</span>{tt.eyebrow || "LIVE PREVIEW"}</span>
-        <h2 className="section-title">{tt.title || "実際の画面、"}<span className="accent">{tt.title_accent || "そのまま触れます。"}</span></h2>
-        <p className="section-sub">{tt.sub || "ダウンロード前に、ブラウザで触ってみてください。PDF を開く・並べ替える・保存する、すべてその場で動きます。"}</p>
-
-        <div className="preview-wrap">
-          <div className="preview-toolbar" aria-hidden="true">
-            <span className="dot dot-r"/><span className="dot dot-y"/><span className="dot dot-g"/>
-            <span className="preview-url">mochipdf / live demo</span>
-          </div>
-          <iframe
-            className="preview-iframe"
-            src={LINKS.liveDemo}
-            title="もちPDF ライブデモ"
-            loading="lazy"
-            referrerPolicy="no-referrer"
-          />
-        </div>
-        <div className="preview-actions">
-          <a className="btn btn-primary" href={LINKS.liveDemo} target="_blank" rel="noopener">
-            <Ic.ArrowRight size={14}/> {tt.fullscreen || "別タブで全画面表示"}
-          </a>
-          <p className="preview-note">{tt.note || "ブラウザ版はファイル選択ダイアログ・ダウンロード経由で動作します。フォルダ一括書き出し等はデスクトップ版限定です。"}</p>
-        </div>
-      </div>
-    </section>
   );
 }
 
@@ -91,7 +53,7 @@ function HeroV1({ t }) {
           <p className="lede">{t.hero.lede}</p>
           <div className="cta">
             <a className="btn btn-primary" href={LINKS.releasesLatest} target="_blank" rel="noopener"><Ic.Download size={16}/> {t.hero.cta_primary}</a>
-            <a className="btn btn-secondary" href={LINKS.liveDemo} target="_blank" rel="noopener"><Ic.Eye size={14}/> {t.hero.cta_try || "ブラウザで試す"}</a>
+            <a className="btn btn-secondary" href="#features">{t.hero.cta_secondary} <Ic.ArrowRight/></a>
           </div>
           <div className="meta">
             {t.hero.meta.map((m,i)=>(
@@ -492,4 +454,4 @@ function Footer({ t }) {
   );
 }
 
-Object.assign(window, { Header, Hero, LivePreview, Marquee, Features, Specs, Download, Guide, Reviews, FAQ, Footer });
+Object.assign(window, { Header, Hero, Marquee, Features, Specs, Download, Guide, Reviews, FAQ, Footer });

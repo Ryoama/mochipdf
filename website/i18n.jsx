@@ -1,17 +1,8 @@
 // i18n dictionary for もちPDF site
 const I18N = {
   ja: {
-    nav: { features: "機能", preview: "プレビュー", specs: "動作環境", download: "ダウンロード", guide: "使い方", faq: "よくある質問" },
+    nav: { features: "機能", specs: "動作環境", download: "ダウンロード", guide: "使い方", faq: "よくある質問" },
     header_cta: "ダウンロード",
-    header_try: "ブラウザで試す",
-    preview: {
-      eyebrow: "LIVE PREVIEW",
-      title: "実際の画面を、",
-      title_accent: "そのまま触れます。",
-      sub: "ダウンロード前に、ブラウザで試してください。PDF を開く・並べ替える・しおりを編集する、すべてその場で動きます。",
-      fullscreen: "別タブで全画面表示",
-      note: "ブラウザ版はファイル選択ダイアログとダウンロード経由で動作します。フォルダ一括書き出し等はデスクトップ版限定です。",
-    },
     hero: {
       eyebrow_a: "🍡",
       eyebrow_text: "完全無料・日本生まれのPDFツール",
@@ -21,7 +12,6 @@ const I18N = {
       lede: "閲覧も、結合も、分割も。やわらかい操作感で、誰でもすぐに使えるPDFツール。インストール3分、登録不要、広告なし。",
       cta_primary: "無料ダウンロード",
       cta_secondary: "機能を見る",
-      cta_try: "ブラウザで試す",
       meta: [
         "Windows / macOS",
         "完全無料・広告なし",
@@ -152,17 +142,8 @@ const I18N = {
     }
   },
   en: {
-    nav: { features: "Features", preview: "Preview", specs: "Requirements", download: "Download", guide: "Guide", faq: "FAQ" },
+    nav: { features: "Features", specs: "Requirements", download: "Download", guide: "Guide", faq: "FAQ" },
     header_cta: "Download",
-    header_try: "Try in browser",
-    preview: {
-      eyebrow: "LIVE PREVIEW",
-      title: "The real app, ",
-      title_accent: "right in your browser.",
-      sub: "Try MochiPDF before you download. Open, reorder and edit PDFs — it all works right here.",
-      fullscreen: "Open in a new tab",
-      note: "The browser version uses the file picker and downloads. Batch folder export and a few others are desktop-only.",
-    },
     hero: {
       eyebrow_a: "🍡",
       eyebrow_text: "Free, made in Japan, lovingly crafted",
@@ -172,7 +153,6 @@ const I18N = {
       lede: "View, merge and split — with the softest UX you've ever felt. Install in 3 minutes. No sign-up. No ads.",
       cta_primary: "Download free",
       cta_secondary: "See features",
-      cta_try: "Try in browser",
       meta: [
         "Windows / macOS",
         "Free, ad-free",

@@ -238,30 +238,6 @@ h2.section-title .accent{color:var(--y-accent)}
 .spec-list .row dd{color:var(--ink)}
 .spec-card .dl{margin-top:22px;display:flex;gap:10px;flex-wrap:wrap}
 
-/* ------- Live preview (real app embedded via iframe) ------- */
-.preview-wrap{
-  margin-top:48px;background:#fff;border:1px solid var(--hairline);border-radius:24px;
-  box-shadow:var(--shadow-soft);overflow:hidden;
-}
-.preview-toolbar{
-  display:flex;align-items:center;gap:8px;
-  padding:12px 18px;background:var(--w-mochi);border-bottom:1px solid var(--hairline);
-}
-.preview-toolbar .dot{width:12px;height:12px;border-radius:50%;display:inline-block}
-.preview-toolbar .dot-r{background:#FF5F57}
-.preview-toolbar .dot-y{background:#FFBD2E}
-.preview-toolbar .dot-g{background:#28C840}
-.preview-toolbar .preview-url{
-  margin-left:10px;font-family:var(--mono);font-size:12px;color:var(--muted);
-}
-.preview-iframe{
-  display:block;width:100%;height:clamp(540px, 72vh, 820px);border:0;background:#fff;
-}
-.preview-actions{
-  margin-top:22px;display:flex;flex-direction:column;align-items:center;gap:10px;text-align:center;
-}
-.preview-note{font-family:var(--sans);font-size:13px;color:var(--muted);max-width:560px;line-height:1.7}
-
 /* ------- Download big ------- */
 .download-hero{
   margin-top:48px;background:var(--ink);color:#fff;border-radius:28px;padding:48px;
@@ -419,8 +395,6 @@ h2.section-title .accent{color:var(--y-accent)}
   .tab-panel{grid-template-columns:1fr;padding:24px}
   .nav{display:none}
   .site-footer .grid{grid-template-columns:1fr 1fr}
-  .preview-iframe{height:clamp(420px, 65vh, 620px)}
-  .header-cta .btn-ghost{display:none}
 }
 </style>
 </head>

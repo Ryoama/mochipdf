@@ -20,7 +20,6 @@ function App() {
       <Header t={t} lang={lang} setLang={setLang} />
       <Hero t={t} variant={1} />
       {tweaks.showMarquee && <Marquee t={t} />}
-      <LivePreview t={t} />
       <Features t={t} />
       <Specs t={t} />
       <Download t={t} />
