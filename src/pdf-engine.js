@@ -25,8 +25,40 @@ export class PdfEngine {
     this.bytes = bytes instanceof Uint8Array ? bytes : new Uint8Array(bytes);
     this.fileName = fileName;
     await this._reload();
-    this.notes = [];
+    this.notes = await this._loadNotesFromAnnotations();
     this.bookmarks = await this._loadBookmarksFromOutline();
+  }
+
+  async _loadNotesFromAnnotations() {
+    const notes = [];
+    if (!this.viewerDoc) return notes;
+    for (let pageIdx = 0; pageIdx < this.pageCount; pageIdx++) {
+      try {
+        const page = await this.viewerDoc.getPage(pageIdx + 1);
+        const annots = await page.getAnnotations();
+        const view = page.view; // [x0, y0, x1, y1] PDF coords
+        const pw = view[2] - view[0];
+        const ph = view[3] - view[1];
+        if (pw <= 0 || ph <= 0) continue;
+        for (const a of annots) {
+          if (a.subtype !== "Text") continue;
+          const rect = a.rect;
+          if (!rect || rect.length !== 4) continue;
+          const cx = (rect[0] + rect[2]) / 2;
+          const cy = (rect[1] + rect[3]) / 2;
+          const nx = Math.max(0, Math.min(1, (cx - view[0]) / pw));
+          const ny = Math.max(0, Math.min(1, 1 - (cy - view[1]) / ph));
+          notes.push({
+            id: this._noteSeq++,
+            page: pageIdx,
+            x: nx,
+            y: ny,
+            text: a.contents || "",
+          });
+        }
+      } catch (e) { /* skip */ }
+    }
+    return notes;
   }
 
   async _loadBookmarksFromOutline() {
@@ -359,46 +391,65 @@ export class PdfEngine {
     this.notes = this.notes.filter((n) => n.id !== id);
   }
 
-  // 保存時: 付箋を描画として焼き込み、しおりを PDF アウトラインとして埋め込み
+  // 保存時: 付箋を PDF テキスト注釈として、しおりをアウトラインとして埋め込み
   async exportWithNotes() {
     const out = await PDFDocument.load(await this.editorDoc.save());
+    this._writeNoteAnnotations(out);
+    this._writeOutline(out);
+    return new Uint8Array(await out.save());
+  }
 
-    // 付箋の描画
-    if (this.notes.length > 0) {
-      const font = await out.embedFont(StandardFonts.Helvetica);
-      for (const note of this.notes) {
-        if (note.page < 0 || note.page >= out.getPageCount()) continue;
-        const page = out.getPage(note.page);
-        const { width: pw, height: ph } = page.getSize();
-        const px = note.x * pw;
-        const py = ph - note.y * ph; // y is from-top in our UI
-        const w = 140, h = 60;
-        page.drawRectangle({
-          x: Math.max(2, Math.min(pw - w - 2, px - w / 2)),
-          y: Math.max(2, Math.min(ph - h - 2, py - h)),
-          width: w, height: h,
-          color: rgb(1.0, 0.93, 0.66),
-          borderColor: rgb(0.96, 0.81, 0.36),
-          borderWidth: 1,
-          opacity: 0.95,
-        });
-        const lines = (note.text || "").split("\n").slice(0, 4);
-        lines.forEach((line, i) => {
-          page.drawText(line.slice(0, 22), {
-            x: Math.max(6, Math.min(pw - w + 4, px - w / 2 + 6)),
-            y: Math.max(4, Math.min(ph - 18, py - 16 - i * 14)),
-            size: 10,
-            font,
-            color: rgb(0.36, 0.31, 0.38),
-          });
-        });
+  _writeNoteAnnotations(pdfDoc) {
+    const context = pdfDoc.context;
+
+    // 1) 既存の /Subtype /Text の注釈をページからクリア
+    //    (MochiPDFで保存したPDFを再保存しても付箋が重複しないように)
+    for (const page of pdfDoc.getPages()) {
+      const annots = page.node.Annots();
+      if (!annots) continue;
+      const keep = [];
+      const size = annots.size();
+      for (let i = 0; i < size; i++) {
+        const ref = annots.get(i);
+        let dict = null;
+        try { dict = context.lookup(ref); } catch (e) {}
+        if (!dict || typeof dict.get !== "function") { keep.push(ref); continue; }
+        const subtype = dict.get(PDFName.of("Subtype"));
+        const isText = subtype && subtype.toString && subtype.toString() === "/Text";
+        if (!isText) keep.push(ref);
       }
+      page.node.set(PDFName.of("Annots"), context.obj(keep));
     }
 
-    // しおり(アウトライン)の書き込み
-    this._writeOutline(out);
-
-    return new Uint8Array(await out.save());
+    // 2) engine.notes を新規注釈として書き込み
+    if (!this.notes || this.notes.length === 0) return;
+    for (const note of this.notes) {
+      if (note.page < 0 || note.page >= pdfDoc.getPageCount()) continue;
+      const page = pdfDoc.getPage(note.page);
+      const { width: pw, height: ph } = page.getSize();
+      const px = note.x * pw;
+      const py = ph - note.y * ph; // UI座標(上基点) → PDF座標(下基点)
+      const halfSize = 12;
+      const annotDict = context.obj({
+        Type: "Annot",
+        Subtype: "Text",
+        Rect: [px - halfSize, py - halfSize, px + halfSize, py + halfSize],
+        Contents: this._pdfTextString(note.text || ""),
+        Name: "Note",
+        Open: false,
+        // 黄色(メインイエロー)
+        C: [1.0, 0.843, 0.4],
+        // MochiPDF マーカー(作成者)
+        T: this._pdfTextString("MochiPDF"),
+      });
+      const annotRef = context.register(annotDict);
+      const existing = page.node.Annots();
+      if (existing) {
+        existing.push(annotRef);
+      } else {
+        page.node.set(PDFName.of("Annots"), context.obj([annotRef]));
+      }
+    }
   }
 
   _writeOutline(pdfDoc) {
