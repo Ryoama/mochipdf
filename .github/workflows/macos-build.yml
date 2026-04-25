@@ -1,0 +1,91 @@
+name: Build macOS
+
+on:
+  push:
+    branches: [main]
+    tags: ["v*"]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  build-macos:
+    name: Build macOS (universal)
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Setup Rust (aarch64 + x86_64 targets for universal binary)
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: aarch64-apple-darwin,x86_64-apple-darwin
+
+      - name: Cache cargo registry
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            src-tauri/target
+          key: ${{ runner.os }}-cargo-${{ hashFiles('src-tauri/Cargo.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-cargo-
+
+      - name: Install npm dependencies
+        run: npm ci
+
+      - name: Build Tauri app (universal .app + .dmg)
+        run: npm run tauri:build -- --target universal-apple-darwin --bundles app,dmg --verbose
+
+      - name: List build outputs
+        if: always()
+        shell: bash
+        run: |
+          base="src-tauri/target/universal-apple-darwin/release"
+          if [ -d "$base/bundle" ]; then
+            echo "=== $base/bundle ==="
+            find "$base/bundle" -type f -maxdepth 4 -print0 \
+              | xargs -0 -I{} sh -c 'printf "%s  %s bytes\n" "{}" "$(wc -c <"{}")"'
+          else
+            echo "Bundle dir missing: $base/bundle"
+          fi
+
+      - name: Stage stable-named release artifact
+        if: success()
+        shell: bash
+        run: |
+          set -euo pipefail
+          stage="release-stage"
+          rm -rf "$stage" && mkdir -p "$stage"
+
+          dmg=$(find src-tauri/target/universal-apple-darwin/release/bundle/dmg -type f -name '*.dmg' 2>/dev/null | head -n1 || true)
+          if [ -z "$dmg" ]; then
+            echo "::error::No .dmg found under bundle/dmg"
+            exit 1
+          fi
+          cp "$dmg" "$stage/MochiPDF-mac.dmg"
+          ls -la "$stage"
+
+      - name: Upload .dmg artifact
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: MochiPDF-mac-dmg
+          path: release-stage/MochiPDF-mac.dmg
+          if-no-files-found: error
+
+      - name: Attach to GitHub Release
+        if: success() && startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: release-stage/*
+          draft: true
+          fail_on_unmatched_files: false

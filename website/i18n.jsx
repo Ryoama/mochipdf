@@ -65,9 +65,8 @@ const I18N = {
       headline: "もちPDF",
       desc: "登録不要、ライセンス不要。ダウンロードしたらすぐに使えます。",
       rows: [
-        { os: "Windows ポータブル", file: "MochiPDF-windows-portable.zip", size: "解凍して即起動" },
-        { os: "Windows インストーラ", file: "MochiPDF-windows-installer.msi", size: ".pdf 関連付け対応" },
-        { os: "macOS", file: "MochiPDF-mac.dmg", size: "Apple Silicon" },
+        { os: "Windows", file: "MochiPDF-windows-portable.zip", size: "解凍して即起動" },
+        { os: "macOS", file: "MochiPDF-mac.dmg", size: "Universal (Apple Silicon / Intel)" },
         { os: "ソースコード", file: "main.zip", size: "GitHub" },
       ],
       checksum: "コード署名・ウイルス対策チェックは GitHub Actions のビルド情報を参照してください。",
@@ -207,9 +206,8 @@ const I18N = {
       headline: "MochiPDF",
       desc: "No sign-up. No license key. Download and run.",
       rows: [
-        { os: "Windows portable", file: "MochiPDF-windows-portable.zip", size: "Unzip and run" },
-        { os: "Windows installer", file: "MochiPDF-windows-installer.msi", size: "Adds .pdf association" },
-        { os: "macOS", file: "MochiPDF-mac.dmg", size: "Apple Silicon" },
+        { os: "Windows", file: "MochiPDF-windows-portable.zip", size: "Unzip and run" },
+        { os: "macOS", file: "MochiPDF-mac.dmg", size: "Universal (Apple Silicon / Intel)" },
         { os: "Source code", file: "main.zip", size: "GitHub" },
       ],
       checksum: "Code-signing & virus-scan results are visible from the GitHub Actions build artifacts.",

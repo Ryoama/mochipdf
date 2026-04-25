@@ -69,8 +69,8 @@ jobs:
           Write-Host "Extracted runtime files (top level):"
           Get-ChildItem $dest | Select-Object Name, Length | Format-Table -AutoSize
 
-      - name: Build Tauri app (MSI + NSIS)
-        run: npm run tauri:build -- --target x86_64-pc-windows-msvc -b msi -b nsis --verbose
+      - name: Build Tauri app (executable only — installers disabled)
+        run: npm run tauri:build -- --target x86_64-pc-windows-msvc -b none --verbose
 
       - name: List build outputs
         if: always()
@@ -111,43 +111,19 @@ jobs:
           Write-Host "Portable zip: $zip"
           Get-Item $zip | Select-Object Name, Length | Format-Table -AutoSize
 
-      - name: Stage stable-named release artifacts
+      - name: Stage stable-named release artifact
         if: success()
         shell: pwsh
         run: |
-          # Tauri's bundles include the app version in their filenames; copy them to
-          # version-free names so the website can use stable /releases/latest/download URLs.
           $stage = "release-stage"
           if (Test-Path $stage) { Remove-Item -Recurse -Force $stage }
           New-Item -ItemType Directory -Force -Path $stage | Out-Null
-
-          $msi = Get-ChildItem "src-tauri/target/x86_64-pc-windows-msvc/release/bundle/msi" -Filter *.msi -ErrorAction SilentlyContinue | Select-Object -First 1
-          if ($msi) { Copy-Item $msi.FullName (Join-Path $stage "MochiPDF-windows-installer.msi") }
-
-          $nsis = Get-ChildItem "src-tauri/target/x86_64-pc-windows-msvc/release/bundle/nsis" -Filter *.exe -ErrorAction SilentlyContinue | Select-Object -First 1
-          if ($nsis) { Copy-Item $nsis.FullName (Join-Path $stage "MochiPDF-windows-setup.exe") }
-
-          if (Test-Path "MochiPDF-windows-portable.zip") {
-            Copy-Item "MochiPDF-windows-portable.zip" (Join-Path $stage "MochiPDF-windows-portable.zip")
+          if (-not (Test-Path "MochiPDF-windows-portable.zip")) {
+            Write-Error "Portable zip missing"
+            exit 1
           }
-
+          Copy-Item "MochiPDF-windows-portable.zip" (Join-Path $stage "MochiPDF-windows-portable.zip")
           Get-ChildItem $stage | Select-Object Name, Length | Format-Table -AutoSize
-
-      - name: Upload MSI artifact
-        if: success()
-        uses: actions/upload-artifact@v4
-        with:
-          name: MochiPDF-windows-installer
-          path: release-stage/MochiPDF-windows-installer.msi
-          if-no-files-found: error
-
-      - name: Upload NSIS installer artifact
-        if: success()
-        uses: actions/upload-artifact@v4
-        with:
-          name: MochiPDF-windows-setup
-          path: release-stage/MochiPDF-windows-setup.exe
-          if-no-files-found: error
 
       - name: Upload self-contained portable zip artifact
         if: success()

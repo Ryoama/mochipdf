@@ -11,8 +11,6 @@ const LINKS = {
   releases: "https://github.com/Ryoama/mochipdf/releases",
   issues: "https://github.com/Ryoama/mochipdf/issues",
   sourceZip: "https://github.com/Ryoama/mochipdf/archive/refs/heads/main.zip",
-  winInstaller: `${DL_BASE}/MochiPDF-windows-installer.msi`,
-  winSetup: `${DL_BASE}/MochiPDF-windows-setup.exe`,
   winPortable: `${DL_BASE}/MochiPDF-windows-portable.zip`,
   macApp: `${DL_BASE}/MochiPDF-mac.dmg`,
 };
@@ -246,7 +244,7 @@ function Specs({ t }) {
         <p className="section-sub">{t.specs.sub}</p>
         <div className="specs">
           {[t.specs.win, t.specs.mac].map((s, i) => {
-            const installHref = i === 0 ? LINKS.winInstaller : LINKS.macApp;
+            const installHref = i === 0 ? LINKS.winPortable : LINKS.macApp;
             return (
               <div className="spec-card" key={i}>
                 <div className="head">
@@ -275,8 +273,8 @@ function Specs({ t }) {
 }
 
 function Download({ t }) {
-  const icons = [Ic.Window, Ic.Window, Ic.Apple, Ic.Folder];
-  const hrefs = [LINKS.winPortable, LINKS.winInstaller, LINKS.macApp, LINKS.sourceZip];
+  const icons = [Ic.Window, Ic.Apple, Ic.Folder];
+  const hrefs = [LINKS.winPortable, LINKS.macApp, LINKS.sourceZip];
   return (
     <section className="section" id="download">
       <div className="container">
