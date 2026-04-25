@@ -26,6 +26,7 @@ window.addEventListener("DOMContentLoaded", () => {
   bindViewerTopbar();
   bindViewerSide();
   bindEditorTopbar();
+  bindEditorGridDnD();
   bindModals();
   bindDragDrop();
   bindKeyboard();
@@ -707,11 +708,13 @@ function refreshSelectionUI() {
 }
 
 // ========== タイル D&D ==========
+// dragstart/dragend はタイル、dragover/drop はグリッドで集約して
+// タイル間のギャップに落としても反応するようにする。
 let tileDragFrom = null;
+
 function bindTileDrag(tile, index) {
   tile.addEventListener("dragstart", (ev) => {
     tileDragFrom = index;
-    // 選択されていない場合は選択だけ、すでに選択されていればグループ移動扱い
     if (!selectedPages.has(index)) {
       selectedPages.clear();
       selectedPages.add(index);
@@ -723,36 +726,76 @@ function bindTileDrag(tile, index) {
   });
   tile.addEventListener("dragend", () => {
     tile.classList.remove("dragging");
-    $$(".page-tile").forEach((t) => t.classList.remove("drop-before", "drop-after"));
+    clearGridDropIndicator();
     tileDragFrom = null;
   });
-  tile.addEventListener("dragover", (ev) => {
+}
+
+function clearGridDropIndicator() {
+  $$(".page-tile").forEach((t) => t.classList.remove("drop-before", "drop-after"));
+}
+
+function findTileDropTarget(x, y) {
+  const tiles = $$(".page-tile");
+  if (tiles.length === 0) return null;
+  let closest = null;
+  let bestScore = Infinity;
+  for (const tile of tiles) {
+    const r = tile.getBoundingClientRect();
+    const cx = (r.left + r.right) / 2;
+    // 行の近さ(y方向)を重く、列の近さ(x方向)を軽く
+    const dyOut = Math.max(0, Math.max(r.top - y, y - r.bottom));
+    const dxOut = Math.max(0, Math.max(r.left - x, x - r.right));
+    const score = dyOut * 4 + dxOut; // 同じ行なら dyOut=0
+    if (score < bestScore) {
+      bestScore = score;
+      closest = { tile, r, cx };
+    }
+  }
+  if (!closest) return null;
+  const idx = parseInt(closest.tile.dataset.page, 10);
+  const before = x < closest.cx;
+  return { tile: closest.tile, index: idx, before };
+}
+
+function updateGridDropIndicator(pos) {
+  clearGridDropIndicator();
+  if (!pos) return;
+  pos.tile.classList.toggle("drop-before", pos.before);
+  pos.tile.classList.toggle("drop-after", !pos.before);
+}
+
+function bindEditorGridDnD() {
+  const grid = $("#editor-grid");
+  if (!grid) return;
+
+  grid.addEventListener("dragover", (ev) => {
     if (tileDragFrom == null) return;
     ev.preventDefault();
     ev.dataTransfer.dropEffect = "move";
-    const rect = tile.getBoundingClientRect();
-    const before = ev.clientX < rect.left + rect.width / 2;
-    $$(".page-tile").forEach((t) => t.classList.remove("drop-before", "drop-after"));
-    tile.classList.toggle("drop-before", before);
-    tile.classList.toggle("drop-after", !before);
+    const pos = findTileDropTarget(ev.clientX, ev.clientY);
+    updateGridDropIndicator(pos);
   });
-  tile.addEventListener("dragleave", () => {
-    tile.classList.remove("drop-before", "drop-after");
+
+  grid.addEventListener("dragleave", (ev) => {
+    // グリッド外(本当に離脱)のときのみクリア
+    if (!grid.contains(ev.relatedTarget)) clearGridDropIndicator();
   });
-  tile.addEventListener("drop", async (ev) => {
+
+  grid.addEventListener("drop", async (ev) => {
     ev.preventDefault();
     if (tileDragFrom == null) return;
-    const rect = tile.getBoundingClientRect();
-    const before = ev.clientX < rect.left + rect.width / 2;
-    const target = before ? index : index + 1;
-    if (tileDragFrom === index) return;
+    const pos = findTileDropTarget(ev.clientX, ev.clientY);
+    clearGridDropIndicator();
+    if (!pos) return;
+    const from = tileDragFrom;
+    const target = pos.before ? pos.index : pos.index + 1;
+    // 実質的な no-op(自分の元位置へのドロップ)はスキップ
+    if (target === from || target === from + 1) return;
     setStatus("並べ替え中…");
-    const fromBefore = tileDragFrom;
-    await engine.movePage(fromBefore, target);
+    await engine.movePage(from, target);
     dirty = true;
-    // 現在ページを追従
-    if (currentPage === fromBefore) currentPage = target > fromBefore ? target - 1 : target;
-    // 選択をリセット(index がずれるため)
+    if (currentPage === from) currentPage = target > from ? target - 1 : target;
     selectedPages.clear();
     await refreshAll();
     toast("並べ替えました", "success");
