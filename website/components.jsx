@@ -1,13 +1,38 @@
 // Components for もちPDF site
 const { useState, useEffect, useRef } = React;
 
+// Stable, version-free download URLs. The CI ships the same file names every
+// release, so /releases/latest/download/<file> always 302-redirects to the
+// real asset and the browser starts the download immediately.
+const DL_BASE = "https://github.com/Ryoama/mochipdf/releases/latest/download";
 const LINKS = {
   repo: "https://github.com/Ryoama/mochipdf",
   releasesLatest: "https://github.com/Ryoama/mochipdf/releases/latest",
   releases: "https://github.com/Ryoama/mochipdf/releases",
   issues: "https://github.com/Ryoama/mochipdf/issues",
   sourceZip: "https://github.com/Ryoama/mochipdf/archive/refs/heads/main.zip",
+  winInstaller: `${DL_BASE}/MochiPDF-windows-installer.msi`,
+  winSetup: `${DL_BASE}/MochiPDF-windows-setup.exe`,
+  winPortable: `${DL_BASE}/MochiPDF-windows-portable.zip`,
+  macApp: `${DL_BASE}/MochiPDF-mac.dmg`,
 };
+
+function detectOS() {
+  if (typeof navigator === "undefined") return "other";
+  const ua = (navigator.userAgent || "").toLowerCase();
+  if (/win/.test(ua)) return "windows";
+  if (/mac|iphone|ipad|ipod/.test(ua)) return "mac";
+  if (/linux/.test(ua)) return "linux";
+  return "other";
+}
+
+// Pick the right artifact for the visitor's OS. Linux / unknown → release page.
+function pickDownloadForOS() {
+  const os = detectOS();
+  if (os === "windows") return LINKS.winPortable;
+  if (os === "mac") return LINKS.macApp;
+  return LINKS.releasesLatest;
+}
 
 function Header({ t, lang, setLang }) {
   return (
@@ -52,7 +77,7 @@ function HeroV1({ t }) {
           </h1>
           <p className="lede">{t.hero.lede}</p>
           <div className="cta">
-            <a className="btn btn-primary" href={LINKS.releasesLatest} target="_blank" rel="noopener"><Ic.Download size={16}/> {t.hero.cta_primary}</a>
+            <a className="btn btn-primary" href={pickDownloadForOS()}><Ic.Download size={16}/> {t.hero.cta_primary}</a>
             <a className="btn btn-secondary" href="#features">{t.hero.cta_secondary} <Ic.ArrowRight/></a>
           </div>
           <div className="meta">
@@ -220,26 +245,29 @@ function Specs({ t }) {
         <h2 className="section-title">{t.specs.title}</h2>
         <p className="section-sub">{t.specs.sub}</p>
         <div className="specs">
-          {[t.specs.win, t.specs.mac].map((s, i) => (
-            <div className="spec-card" key={i}>
-              <div className="head">
-                <div className="os-icon">{i===0 ? <Ic.Window/> : <Ic.Apple/>}</div>
-                <div>
-                  <h3>{s.os}</h3>
-                  <div className="ver">{s.ver}</div>
+          {[t.specs.win, t.specs.mac].map((s, i) => {
+            const installHref = i === 0 ? LINKS.winInstaller : LINKS.macApp;
+            return (
+              <div className="spec-card" key={i}>
+                <div className="head">
+                  <div className="os-icon">{i===0 ? <Ic.Window/> : <Ic.Apple/>}</div>
+                  <div>
+                    <h3>{s.os}</h3>
+                    <div className="ver">{s.ver}</div>
+                  </div>
+                </div>
+                <dl className="spec-list">
+                  <div className="row"><dt>{t.specs.label.cpu}</dt><dd>{s.cpu}</dd></div>
+                  <div className="row"><dt>{t.specs.label.ram}</dt><dd>{s.ram}</dd></div>
+                  <div className="row"><dt>{t.specs.label.disk}</dt><dd>{s.disk}</dd></div>
+                  <div className="row"><dt>{t.specs.label.net}</dt><dd>{s.net}</dd></div>
+                </dl>
+                <div className="dl">
+                  <a className="btn btn-primary" href={installHref} style={{padding:'10px 16px',fontSize:'13px'}}><Ic.Download size={14}/> {t.specs.install}</a>
                 </div>
               </div>
-              <dl className="spec-list">
-                <div className="row"><dt>{t.specs.label.cpu}</dt><dd>{s.cpu}</dd></div>
-                <div className="row"><dt>{t.specs.label.ram}</dt><dd>{s.ram}</dd></div>
-                <div className="row"><dt>{t.specs.label.disk}</dt><dd>{s.disk}</dd></div>
-                <div className="row"><dt>{t.specs.label.net}</dt><dd>{s.net}</dd></div>
-              </dl>
-              <div className="dl">
-                <a className="btn btn-primary" href={LINKS.releasesLatest} target="_blank" rel="noopener" style={{padding:'10px 16px',fontSize:'13px'}}><Ic.Download size={14}/> {t.specs.install}</a>
-              </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
     </section>
@@ -247,8 +275,8 @@ function Specs({ t }) {
 }
 
 function Download({ t }) {
-  const icons = [Ic.Window, Ic.Apple, Ic.Folder];
-  const hrefs = [LINKS.releasesLatest, LINKS.releasesLatest, LINKS.sourceZip];
+  const icons = [Ic.Window, Ic.Window, Ic.Apple, Ic.Folder];
+  const hrefs = [LINKS.winPortable, LINKS.winInstaller, LINKS.macApp, LINKS.sourceZip];
   return (
     <section className="section" id="download">
       <div className="container">
@@ -265,7 +293,7 @@ function Download({ t }) {
             {t.download.rows.map((r, i) => {
               const I = icons[i] || Ic.Folder;
               return (
-                <a className="dl-row" key={i} href={hrefs[i]} target="_blank" rel="noopener">
+                <a className="dl-row" key={i} href={hrefs[i]}>
                   <div className="left">
                     <div className="os"><I size={18}/></div>
                     <div>
