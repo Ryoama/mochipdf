@@ -10,7 +10,7 @@ on:
 
 jobs:
   build-macos:
-    name: Build macOS (universal)
+    name: Build macOS (Apple Silicon)
     runs-on: macos-latest
 
     steps:
@@ -23,10 +23,10 @@ jobs:
           node-version: 20
           cache: npm
 
-      - name: Setup Rust (aarch64 + x86_64 targets for universal binary)
+      - name: Setup Rust (aarch64-apple-darwin)
         uses: dtolnay/rust-toolchain@stable
         with:
-          targets: aarch64-apple-darwin,x86_64-apple-darwin
+          targets: aarch64-apple-darwin
 
       - name: Cache cargo registry
         uses: actions/cache@v4
@@ -42,20 +42,21 @@ jobs:
       - name: Install npm dependencies
         run: npm ci
 
-      - name: Build Tauri app (universal .app + .dmg)
-        run: npm run tauri:build -- --target universal-apple-darwin -b app -b dmg --verbose
+      - name: Build Tauri app (.app + .dmg)
+        run: npm run tauri:build -- --target aarch64-apple-darwin --verbose
 
       - name: List build outputs
         if: always()
         shell: bash
         run: |
-          base="src-tauri/target/universal-apple-darwin/release"
+          base="src-tauri/target/aarch64-apple-darwin/release"
           if [ -d "$base/bundle" ]; then
             echo "=== $base/bundle ==="
-            find "$base/bundle" -type f -maxdepth 4 -print0 \
+            find "$base/bundle" -type f -print0 \
               | xargs -0 -I{} sh -c 'printf "%s  %s bytes\n" "{}" "$(wc -c <"{}")"'
           else
             echo "Bundle dir missing: $base/bundle"
+            ls -R "src-tauri/target" 2>/dev/null | head -200 || true
           fi
 
       - name: Stage stable-named release artifact
@@ -66,9 +67,10 @@ jobs:
           stage="release-stage"
           rm -rf "$stage" && mkdir -p "$stage"
 
-          dmg=$(find src-tauri/target/universal-apple-darwin/release/bundle/dmg -type f -name '*.dmg' 2>/dev/null | head -n1 || true)
+          dmg=$(find src-tauri/target/aarch64-apple-darwin/release/bundle/dmg -type f -name '*.dmg' 2>/dev/null | head -n1 || true)
           if [ -z "$dmg" ]; then
             echo "::error::No .dmg found under bundle/dmg"
+            find src-tauri/target -type f -name '*.dmg' 2>/dev/null || true
             exit 1
           fi
           cp "$dmg" "$stage/MochiPDF-mac.dmg"

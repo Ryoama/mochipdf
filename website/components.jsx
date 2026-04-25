@@ -1,18 +1,22 @@
 // Components for もちPDF site
 const { useState, useEffect, useRef } = React;
 
-// Stable, version-free download URLs. The CI ships the same file names every
-// release, so /releases/latest/download/<file> always 302-redirects to the
-// real asset and the browser starts the download immediately.
+// Stable, version-free download URLs. The CI ships these exact filenames every
+// release, so /releases/latest/download/<file> 302-redirects to the real asset
+// and the browser starts the download immediately.
 const DL_BASE = "https://github.com/Ryoama/mochipdf/releases/latest/download";
+const ASSET_NAMES = {
+  winPortable: "MochiPDF-windows-portable.zip",
+  macApp: "MochiPDF-mac.dmg",
+};
 const LINKS = {
   repo: "https://github.com/Ryoama/mochipdf",
   releasesLatest: "https://github.com/Ryoama/mochipdf/releases/latest",
   releases: "https://github.com/Ryoama/mochipdf/releases",
   issues: "https://github.com/Ryoama/mochipdf/issues",
   sourceZip: "https://github.com/Ryoama/mochipdf/archive/refs/heads/main.zip",
-  winPortable: `${DL_BASE}/MochiPDF-windows-portable.zip`,
-  macApp: `${DL_BASE}/MochiPDF-mac.dmg`,
+  winPortable: `${DL_BASE}/${ASSET_NAMES.winPortable}`,
+  macApp: `${DL_BASE}/${ASSET_NAMES.macApp}`,
 };
 
 function detectOS() {
@@ -24,12 +28,44 @@ function detectOS() {
   return "other";
 }
 
-// Pick the right artifact for the visitor's OS. Linux / unknown → release page.
-function pickDownloadForOS() {
+// Cache the latest-release lookup for the page lifetime.
+const _releaseCache = { promise: null };
+function fetchLatestRelease() {
+  if (!_releaseCache.promise) {
+    _releaseCache.promise = fetch(
+      "https://api.github.com/repos/Ryoama/mochipdf/releases/latest",
+      { headers: { Accept: "application/vnd.github+json" } },
+    )
+      .then((r) => (r.ok ? r.json() : null))
+      .catch(() => null);
+  }
+  return _releaseCache.promise;
+}
+
+// Click handler: check whether `assetName` exists in the latest release.
+// If yes → start download. If no (no release yet, asset not built, rate-limit,
+// network error) → open the releases page so the user sees what's available
+// instead of GitHub's bare 404.
+function smartDownload(assetName) {
+  return async (e) => {
+    if (e) e.preventDefault();
+    const release = await fetchLatestRelease();
+    const asset = release && release.assets && release.assets.find((a) => a.name === assetName);
+    if (asset) {
+      window.location.assign(asset.browser_download_url);
+    } else {
+      window.open(LINKS.releasesLatest, "_blank", "noopener");
+    }
+  };
+}
+
+// Pick the right asset for the visitor's OS. Linux / unknown → null (caller
+// falls back to the releases page).
+function pickAssetForOS() {
   const os = detectOS();
-  if (os === "windows") return LINKS.winPortable;
-  if (os === "mac") return LINKS.macApp;
-  return LINKS.releasesLatest;
+  if (os === "windows") return ASSET_NAMES.winPortable;
+  if (os === "mac") return ASSET_NAMES.macApp;
+  return null;
 }
 
 function Header({ t, lang, setLang }) {
@@ -75,7 +111,14 @@ function HeroV1({ t }) {
           </h1>
           <p className="lede">{t.hero.lede}</p>
           <div className="cta">
-            <a className="btn btn-primary" href={pickDownloadForOS()}><Ic.Download size={16}/> {t.hero.cta_primary}</a>
+            <a className="btn btn-primary"
+               href={LINKS.releasesLatest}
+               onClick={(() => {
+                 const asset = pickAssetForOS();
+                 return asset ? smartDownload(asset) : undefined;
+               })()}>
+              <Ic.Download size={16}/> {t.hero.cta_primary}
+            </a>
             <a className="btn btn-secondary" href="#features">{t.hero.cta_secondary} <Ic.ArrowRight/></a>
           </div>
           <div className="meta">
@@ -245,6 +288,7 @@ function Specs({ t }) {
         <div className="specs">
           {[t.specs.win, t.specs.mac].map((s, i) => {
             const installHref = i === 0 ? LINKS.winPortable : LINKS.macApp;
+            const installAsset = i === 0 ? ASSET_NAMES.winPortable : ASSET_NAMES.macApp;
             return (
               <div className="spec-card" key={i}>
                 <div className="head">
@@ -261,7 +305,7 @@ function Specs({ t }) {
                   <div className="row"><dt>{t.specs.label.net}</dt><dd>{s.net}</dd></div>
                 </dl>
                 <div className="dl">
-                  <a className="btn btn-primary" href={installHref} style={{padding:'10px 16px',fontSize:'13px'}}><Ic.Download size={14}/> {t.specs.install}</a>
+                  <a className="btn btn-primary" href={installHref} onClick={smartDownload(installAsset)} style={{padding:'10px 16px',fontSize:'13px'}}><Ic.Download size={14}/> {t.specs.install}</a>
                 </div>
               </div>
             );
@@ -275,6 +319,9 @@ function Specs({ t }) {
 function Download({ t }) {
   const icons = [Ic.Window, Ic.Apple, Ic.Folder];
   const hrefs = [LINKS.winPortable, LINKS.macApp, LINKS.sourceZip];
+  // Source zip is served by GitHub itself (not a release asset), so it's always
+  // reachable — no smart fallback needed for that row.
+  const onClicks = [smartDownload(ASSET_NAMES.winPortable), smartDownload(ASSET_NAMES.macApp), undefined];
   return (
     <section className="section" id="download">
       <div className="container">
@@ -291,7 +338,7 @@ function Download({ t }) {
             {t.download.rows.map((r, i) => {
               const I = icons[i] || Ic.Folder;
               return (
-                <a className="dl-row" key={i} href={hrefs[i]}>
+                <a className="dl-row" key={i} href={hrefs[i]} onClick={onClicks[i]}>
                   <div className="left">
                     <div className="os"><I size={18}/></div>
                     <div>

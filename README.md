@@ -41,7 +41,7 @@ npm run tauri:dev
 | OS | ファイル名(固定) | 中身 |
 | --- | --- | --- |
 | Windows | `MochiPDF-windows-portable.zip` | 解凍して `MochiPDF.exe` をダブルクリックで起動。WebView2 Fixed Runtime 同梱(zip サイズ ~180MB) |
-| macOS | `MochiPDF-mac.dmg` | Universal バイナリ(Apple Silicon / Intel)。マウントして `MochiPDF.app` を Applications にドラッグ |
+| macOS | `MochiPDF-mac.dmg` | Apple Silicon (M シリーズ) 用。マウントして `MochiPDF.app` を Applications にドラッグ。Intel Mac では Rosetta 2 経由で動作 |
 
 ファイル名にはバージョン番号を入れていないため、ランディングサイトから `https://github.com/Ryoama/mochipdf/releases/latest/download/<ファイル名>` で常に最新版を直リンクできます。
 
@@ -53,9 +53,10 @@ npm run tauri:dev
 
 ### macOS ビルド(`.github/workflows/macos-build.yml`)
 
-`macos-latest` で `tauri build --target universal-apple-darwin --bundles app,dmg` を回し、Universal `.dmg` を `MochiPDF-mac.dmg` として固定名で出力します。`v*` タグ push 時はドラフトリリースに自動添付。
+`macos-latest` で `tauri build --target aarch64-apple-darwin` を回し、Apple Silicon 用 `.dmg` を `MochiPDF-mac.dmg` として固定名で出力します。`v*` タグ push 時はドラフトリリースに自動添付。
 
 > ⚠️ 現状 CI ではコード署名 / Notarization を行っていません。初回起動時に Gatekeeper の警告が出る場合は、`MochiPDF.app` を右クリック → 「開く」を選択してください。
+> ⚠️ Intel Mac は Rosetta 2 経由で動作します。ネイティブ Intel ビルドが必要なら `-target x86_64-apple-darwin` を追加で回す jobs を組んでください。
 
 ## ランディングサイト(Vercel)
 
