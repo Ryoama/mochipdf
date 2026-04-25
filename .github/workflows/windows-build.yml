@@ -8,6 +8,9 @@ on:
     branches: [main]
   workflow_dispatch:
 
+env:
+  WEBVIEW2_VERSION: "133.0.3065.92"
+
 jobs:
   build-windows:
     name: Build Windows (x64)
@@ -42,6 +45,30 @@ jobs:
       - name: Install npm dependencies
         run: npm ci
 
+      - name: Download WebView2 Fixed Version Runtime
+        shell: pwsh
+        run: |
+          $ver = "${env:WEBVIEW2_VERSION}"
+          $cab = "src-tauri/webview2.cab"
+          $dest = "src-tauri/Microsoft.WebView2.FixedVersionRuntime.$ver.x64"
+          $url = "https://github.com/westinyang/WebView2RuntimeArchive/releases/download/$ver/Microsoft.WebView2.FixedVersionRuntime.$ver.x64.cab"
+          Write-Host "Downloading $url"
+          Invoke-WebRequest -Uri $url -OutFile $cab -UseBasicParsing
+          New-Item -ItemType Directory -Force -Path $dest | Out-Null
+          expand $cab -F:* $dest | Out-Null
+          $nested = Join-Path $dest "Microsoft.WebView2.FixedVersionRuntime.$ver.x64"
+          if (Test-Path $nested) {
+            Get-ChildItem $nested -Force | Move-Item -Destination $dest
+            Remove-Item -Recurse -Force $nested
+          }
+          if (-not (Test-Path (Join-Path $dest "msedgewebview2.exe"))) {
+            Write-Error "Extraction failed: msedgewebview2.exe not found in $dest"
+            Get-ChildItem -Recurse $dest | Select-Object FullName | Format-Table -AutoSize
+            exit 1
+          }
+          Write-Host "Extracted runtime files (top level):"
+          Get-ChildItem $dest | Select-Object Name, Length | Format-Table -AutoSize
+
       - name: Build Tauri app (MSI + NSIS)
         run: npm run tauri:build -- --target x86_64-pc-windows-msvc -b msi -b nsis --verbose
 
@@ -61,6 +88,30 @@ jobs:
             Write-Host "Build output dir does not exist: $base"
           }
 
+      - name: Package self-contained portable zip
+        if: success()
+        shell: pwsh
+        run: |
+          $ver = "${env:WEBVIEW2_VERSION}"
+          $release = "src-tauri/target/x86_64-pc-windows-msvc/release"
+          $exe = Join-Path $release "MochiPDF.exe"
+          $runtime = "src-tauri/Microsoft.WebView2.FixedVersionRuntime.$ver.x64"
+          if (-not (Test-Path $exe)) {
+            Write-Error "Built exe not found: $exe"
+            Get-ChildItem $release -File | Format-Table Name
+            exit 1
+          }
+          $stage = "MochiPDF-portable"
+          New-Item -ItemType Directory -Force -Path $stage | Out-Null
+          Copy-Item $exe (Join-Path $stage "MochiPDF.exe")
+          Copy-Item -Recurse $runtime (Join-Path $stage "Microsoft.WebView2.FixedVersionRuntime.$ver.x64")
+          $appVer = (Select-String -Path "src-tauri/tauri.conf.json" -Pattern '"version"\s*:\s*"([^"]+)"').Matches[0].Groups[1].Value
+          $zip = "MochiPDF_${appVer}_x64-portable.zip"
+          if (Test-Path $zip) { Remove-Item $zip }
+          Compress-Archive -Path "$stage\*" -DestinationPath $zip
+          Write-Host "Portable zip: $zip"
+          Get-Item $zip | Select-Object Name, Length | Format-Table -AutoSize
+
       - name: Upload MSI artifact
         if: success()
         uses: actions/upload-artifact@v4
@@ -77,13 +128,13 @@ jobs:
           path: src-tauri/target/x86_64-pc-windows-msvc/release/bundle/nsis/*.exe
           if-no-files-found: error
 
-      - name: Upload portable exe artifact
+      - name: Upload self-contained portable zip artifact
         if: success()
         uses: actions/upload-artifact@v4
         with:
           name: MochiPDF-windows-portable
-          path: src-tauri/target/x86_64-pc-windows-msvc/release/mochi-pdf.exe
-          if-no-files-found: warn
+          path: MochiPDF_*_x64-portable.zip
+          if-no-files-found: error
 
       - name: Attach to GitHub Release
         if: success() && startsWith(github.ref, 'refs/tags/v')
@@ -92,6 +143,6 @@ jobs:
           files: |
             src-tauri/target/x86_64-pc-windows-msvc/release/bundle/msi/*.msi
             src-tauri/target/x86_64-pc-windows-msvc/release/bundle/nsis/*.exe
-            src-tauri/target/x86_64-pc-windows-msvc/release/mochi-pdf.exe
+            MochiPDF_*_x64-portable.zip
           draft: true
           fail_on_unmatched_files: false

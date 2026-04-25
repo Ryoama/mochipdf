@@ -74,6 +74,10 @@
       "icons/icon.ico"
     ],
     "windows": {
+      "webviewInstallMode": {
+        "type": "fixedRuntime",
+        "path": "./Microsoft.WebView2.FixedVersionRuntime.133.0.3065.92.x64/"
+      },
       "wix": {
         "language": ["en-US", "ja-JP"]
       },

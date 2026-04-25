@@ -70,6 +70,13 @@ npm run tauri:build -- --target x86_64-pc-windows-msvc --bundles msi nsis
 - `.pdf` ファイルを「もちPDF で開く」できるよう、MSI/NSIS インストール時にファイル関連付けを登録します。
 - NSIS インストーラはユーザー単位インストール(管理者権限不要)です。インストール時に英語/日本語を選択できます。
 - MSI は en-US と ja-JP を同梱しています。
+- WebView2 ランタイムは **fixedRuntime モード**で同梱しています。インストール環境に WebView2 が無くても初回起動でダウンロードされず、追加セットアップ不要で動作します。
+
+### Windows ポータブル版(セットアップ不要)
+
+`MochiPDF_<ver>_x64-portable.zip` を解凍して `MochiPDF.exe` をダブルクリックすれば動きます。**インストーラの実行も WebView2 のインストールも不要**です。フォルダごと USB メモリ等にコピーすれば任意の Windows マシンで動作します(zip 内に WebView2 Fixed Runtime を同梱しているため、サイズは ~180MB になります)。
+
+ローカルでこの portable zip を作るには、`src-tauri/Microsoft.WebView2.FixedVersionRuntime.<ver>.x64/` に WebView2 Fixed Runtime を配置してから `tauri build` してください。WebView2 Fixed Runtime は [Microsoft の WebView2 ページ](https://developer.microsoft.com/microsoft-edge/webview2/) または [westinyang/WebView2RuntimeArchive](https://github.com/westinyang/WebView2RuntimeArchive/releases) から取得できます。CI ではバージョン `133.0.3065.92` を使用しています。
 
 ## ブランドカラー
 
