@@ -1,35 +1,61 @@
 // ========== Tauri / ブラウザ 共通ファイル I/O ブリッジ ==========
-import { open as openDialog, save as saveDialog } from "@tauri-apps/plugin-dialog";
-import { readFile, writeFile } from "@tauri-apps/plugin-fs";
-import { join as pathJoin } from "@tauri-apps/api/path";
-import { downloadBlob, readFileAsBytes } from "./helpers.js";
+import { invoke, isTauri as detectTauri } from "@tauri-apps/api/core";
+import {
+  assertFileSize,
+  downloadBlob,
+  MAX_FILE_BYTES,
+  readFileAsBytes,
+  toast,
+} from "./helpers.js";
 
-// Tauri 2 では window.__TAURI_INTERNALS__ が定義される
-export const isTauri = typeof window !== "undefined"
-  && (!!window.__TAURI_INTERNALS__ || !!window.__TAURI__);
+export const isTauri = typeof window !== "undefined" && detectTauri();
 
 function basenameNoExt(path, ext = ".pdf") {
   const name = (path || "").split(/[\\/]/).pop() || "untitled";
   return name.endsWith(ext) ? name.slice(0, -ext.length) : name;
 }
 
+function toBytes(value) {
+  if (value instanceof Uint8Array) return value;
+  if (value instanceof ArrayBuffer) return new Uint8Array(value);
+  return Uint8Array.from(value);
+}
+
+function notifyFileError(error) {
+  console.error(error);
+  toast(error?.message || String(error), "error", 5000);
+}
+
+async function readPickedFile(file) {
+  const data = await invoke("mochi_read_picked_file", { id: file.id });
+  const bytes = toBytes(data);
+  assertFileSize(bytes.byteLength, file.name);
+  return { bytes, name: file.name, path: file.path };
+}
+
+async function writeReservedFile(id, bytes) {
+  const data = toBytes(bytes);
+  if (data.byteLength > 512 * 1024 * 1024) {
+    throw new Error("512MBを超えるファイルは保存できません");
+  }
+  await invoke("mochi_write_reserved_file", data, { headers: { id } });
+}
+
 // ファイル選択。multi=true なら配列、false なら単一。null/[] でキャンセル。
 export async function pickFiles({ accept = "application/pdf", multi = false, exts = ["pdf"], title } = {}) {
   if (isTauri) {
-    const sel = await openDialog({
-      multiple: multi,
-      title,
-      filters: [{ name: exts.map((e) => e.toUpperCase()).join("/"), extensions: exts }],
-    });
-    if (!sel) return null;
-    const list = Array.isArray(sel) ? sel : [sel];
-    const out = [];
-    for (const path of list) {
-      const bytes = await readFile(path);
-      const name = path.split(/[\\/]/).pop() || "file";
-      out.push({ bytes, name, path });
+    try {
+      const picked = await invoke("mochi_pick_files", {
+        options: { multi, exts, title },
+      });
+      if (!picked?.length) return null;
+      const out = [];
+      for (const file of picked) out.push(await readPickedFile(file));
+      return multi ? out : out[0];
+    } catch (error) {
+      notifyFileError(error);
+      return null;
     }
-    return multi ? out : out[0];
   }
   // ブラウザフォールバック
   return await new Promise((resolve) => {
@@ -44,8 +70,13 @@ export async function pickFiles({ accept = "application/pdf", multi = false, ext
       input.remove();
       if (!files.length) return resolve(null);
       const out = [];
-      for (const f of files) {
-        out.push({ bytes: await readFileAsBytes(f), name: f.name, path: null });
+      try {
+        for (const f of files) {
+          out.push({ bytes: await readFileAsBytes(f), name: f.name, path: null });
+        }
+      } catch (error) {
+        notifyFileError(error);
+        return resolve(null);
       }
       resolve(multi ? out : out[0]);
     });
@@ -57,13 +88,15 @@ export async function pickFiles({ accept = "application/pdf", multi = false, ext
 // キャンセル時は null。
 export async function saveFile(bytes, suggestedName) {
   if (isTauri) {
-    const path = await saveDialog({
-      defaultPath: suggestedName,
-      filters: [{ name: "PDF", extensions: ["pdf"] }],
-    });
-    if (!path) return null;
-    await writeFile(path, bytes);
-    return path;
+    try {
+      const reserved = await invoke("mochi_reserve_save_file", { suggestedName });
+      if (!reserved) return null;
+      await writeReservedFile(reserved.id, bytes);
+      return reserved.path;
+    } catch (error) {
+      notifyFileError(error);
+      return null;
+    }
   }
   downloadBlob(bytes, suggestedName);
   return suggestedName;
@@ -72,24 +105,29 @@ export async function saveFile(bytes, suggestedName) {
 // ディレクトリ選択(分割で複数ファイル一括保存用)
 export async function pickDirectory(title = "保存先フォルダを選択") {
   if (isTauri) {
-    const dir = await openDialog({
-      directory: true,
-      multiple: false,
-      title,
-    });
-    return dir || null;
+    try {
+      return await invoke("mochi_pick_directory", { title });
+    } catch (error) {
+      notifyFileError(error);
+      return null;
+    }
   }
   return null;
 }
 
-export async function writeBytesToPath(path, bytes) {
+export async function writeBytesToDirectory(dir, filename, bytes) {
   if (!isTauri) throw new Error("not in tauri");
-  await writeFile(path, bytes);
+  try {
+    const reserved = await invoke("mochi_reserve_directory_file", {
+      dirId: dir.id,
+      filename,
+    });
+    await writeReservedFile(reserved.id, bytes);
+    return reserved.path;
+  } catch (error) {
+    notifyFileError(error);
+    throw error;
+  }
 }
 
-export async function joinPath(...parts) {
-  if (isTauri) return await pathJoin(...parts);
-  return parts.join("/");
-}
-
-export { basenameNoExt };
+export { basenameNoExt, MAX_FILE_BYTES };

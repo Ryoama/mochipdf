@@ -3,6 +3,19 @@
 export const $ = (sel) => document.querySelector(sel);
 export const $$ = (sel) => Array.from(document.querySelectorAll(sel));
 
+export const MAX_FILE_BYTES = 250 * 1024 * 1024;
+
+export function formatBytes(bytes) {
+  const mb = bytes / 1024 / 1024;
+  return `${Math.round(mb)}MB`;
+}
+
+export function assertFileSize(size, name = "ファイル", maxBytes = MAX_FILE_BYTES) {
+  if (size > maxBytes) {
+    throw new Error(`${name} は ${formatBytes(maxBytes)} を超えるため読み込めません`);
+  }
+}
+
 export function el(tag, attrs = {}, ...children) {
   const e = document.createElement(tag);
   for (const [k, v] of Object.entries(attrs)) {
@@ -85,7 +98,8 @@ export function basename(path, ext = ".pdf") {
   return name.endsWith(ext) ? name.slice(0, -ext.length) : name;
 }
 
-export function readFileAsBytes(file) {
+export function readFileAsBytes(file, maxBytes = MAX_FILE_BYTES) {
+  if (file?.size != null) assertFileSize(file.size, file.name, maxBytes);
   return new Promise((resolve, reject) => {
     const r = new FileReader();
     r.onload = () => resolve(new Uint8Array(r.result));

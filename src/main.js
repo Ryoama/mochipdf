@@ -2,7 +2,7 @@
 import { PDFDocument } from "pdf-lib";
 import { PdfEngine } from "./pdf-engine.js";
 import {
-  pickFiles, saveFile, pickDirectory, joinPath, writeBytesToPath, isTauri,
+  pickFiles, saveFile, pickDirectory, writeBytesToDirectory, isTauri,
 } from "./tauri-bridge.js";
 import {
   $, $$, el, toast, setStatus, setFileStatus, showModal, hideModal,
@@ -20,6 +20,7 @@ let noteMode = false;            // 付箋配置モード
 
 // ========== 起動 ==========
 window.addEventListener("DOMContentLoaded", () => {
+  bindContextMenuGuard();
   bindSidebarToggle();
   bindNavbar();
   bindHomeCards();
@@ -41,6 +42,13 @@ window.addEventListener("DOMContentLoaded", () => {
     $("#btn-sidebar-toggle").title = "サイドバーをひらく";
   }
 });
+
+function bindContextMenuGuard() {
+  document.addEventListener("contextmenu", (ev) => {
+    if (ev.target?.closest?.("input, textarea, [contenteditable='true']")) return;
+    ev.preventDefault();
+  });
+}
 
 // ========== サイドバー折りたたみ ==========
 function bindSidebarToggle() {
@@ -622,6 +630,8 @@ async function refreshEditorGrid() {
     const tile = el("div", {
       class: "page-tile",
       "data-page": i,
+      title: "ドラッグ&ドロップで並べ替え",
+      "aria-label": `ページ ${i + 1}`,
       draggable: true,
     });
     const canvasWrap = el("div", { class: "tile-canvas-wrap" });
@@ -721,8 +731,10 @@ function bindTileDrag(tile, index) {
       refreshSelectionUI();
     }
     tile.classList.add("dragging");
-    ev.dataTransfer.effectAllowed = "move";
-    ev.dataTransfer.setData("text/plain", String(index));
+    if (ev.dataTransfer) {
+      ev.dataTransfer.effectAllowed = "move";
+      ev.dataTransfer.setData("text/plain", String(index));
+    }
   });
   tile.addEventListener("dragend", () => {
     tile.classList.remove("dragging");
@@ -765,6 +777,22 @@ function updateGridDropIndicator(pos) {
   pos.tile.classList.toggle("drop-after", !pos.before);
 }
 
+function getAdjustedMoveIndex(from, target) {
+  const total = engine.pageCount;
+  return Math.min(total - 1, target > from ? target - 1 : target);
+}
+
+function mapPageIndexAfterMove(page, from, target) {
+  const movedTo = getAdjustedMoveIndex(from, target);
+  if (page === from) return movedTo;
+  if (from < target) {
+    if (page > from && page <= movedTo) return page - 1;
+  } else if (from > target) {
+    if (page >= movedTo && page < from) return page + 1;
+  }
+  return page;
+}
+
 function bindEditorGridDnD() {
   const grid = $("#editor-grid");
   if (!grid) return;
@@ -772,7 +800,7 @@ function bindEditorGridDnD() {
   grid.addEventListener("dragover", (ev) => {
     if (tileDragFrom == null) return;
     ev.preventDefault();
-    ev.dataTransfer.dropEffect = "move";
+    if (ev.dataTransfer) ev.dataTransfer.dropEffect = "move";
     const pos = findTileDropTarget(ev.clientX, ev.clientY);
     updateGridDropIndicator(pos);
   });
@@ -792,13 +820,24 @@ function bindEditorGridDnD() {
     const target = pos.before ? pos.index : pos.index + 1;
     // 実質的な no-op(自分の元位置へのドロップ)はスキップ
     if (target === from || target === from + 1) return;
+    const movedTo = getAdjustedMoveIndex(from, target);
+    const nextCurrentPage = mapPageIndexAfterMove(currentPage, from, target);
     setStatus("並べ替え中…");
-    await engine.movePage(from, target);
-    dirty = true;
-    if (currentPage === from) currentPage = target > from ? target - 1 : target;
-    selectedPages.clear();
-    await refreshAll();
-    toast("並べ替えました", "success");
+    try {
+      await engine.movePage(from, target);
+      currentPage = nextCurrentPage;
+      dirty = true;
+      selectedPages.clear();
+      selectedPages.add(movedTo);
+      lastSelectedPage = movedTo;
+      await refreshAll();
+      setStatus("並べ替え完了");
+      toast(`ページ ${from + 1} を移動しました`, "success");
+    } catch (e) {
+      console.error(e);
+      setStatus("並べ替え失敗");
+      toast("ページの並べ替えに失敗しました", "error");
+    }
   });
 }
 
@@ -935,8 +974,7 @@ async function runSplit() {
     const dir = await pickDirectory("保存先フォルダを選択");
     if (!dir) { setStatus("キャンセル"); return; }
     for (const p of parts) {
-      const path = await joinPath(dir, `${baseName}${p.suffix}.pdf`);
-      await writeBytesToPath(path, p.bytes);
+      await writeBytesToDirectory(dir, `${baseName}${p.suffix}.pdf`, p.bytes);
     }
     toast(`${parts.length}ファイルに分割しました`, "success");
   } else {
