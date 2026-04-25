@@ -52,12 +52,40 @@
   "bundle": {
     "active": true,
     "targets": "all",
+    "publisher": "MochiPDF",
+    "shortDescription": "かわいい PDF ビューア&エディタ",
+    "longDescription": "もちPDF — PDF を閲覧・編集できる軽量なネイティブアプリ。",
+    "category": "Productivity",
+    "copyright": "© MochiPDF",
+    "fileAssociations": [
+      {
+        "ext": ["pdf"],
+        "name": "PDF Document",
+        "description": "PDF Document",
+        "role": "Editor",
+        "mimeType": "application/pdf"
+      }
+    ],
     "icon": [
       "icons/32x32.png",
       "icons/128x128.png",
       "icons/128x128@2x.png",
       "icons/icon.icns",
       "icons/icon.ico"
-    ]
+    ],
+    "windows": {
+      "webviewInstallMode": {
+        "type": "fixedRuntime",
+        "path": "./Microsoft.WebView2.FixedVersionRuntime.133.0.3065.92.x64/"
+      },
+      "wix": {
+        "language": ["en-US", "ja-JP"]
+      },
+      "nsis": {
+        "installMode": "currentUser",
+        "languages": ["English", "Japanese"],
+        "displayLanguageSelector": true
+      }
+    }
   }
 }
