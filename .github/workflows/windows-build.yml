@@ -11,6 +11,12 @@ on:
 env:
   WEBVIEW2_VERSION: "133.0.3065.92"
 
+# Needed so softprops/action-gh-release can upload assets to the GitHub Release
+# created for the v* tag. Default GITHUB_TOKEN is read-only, which causes the
+# upload step to 403.
+permissions:
+  contents: write
+
 jobs:
   build-windows:
     name: Build Windows (x64)

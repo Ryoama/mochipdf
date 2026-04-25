@@ -8,6 +8,12 @@ on:
     branches: [main]
   workflow_dispatch:
 
+# Needed so softprops/action-gh-release can upload assets to the GitHub Release
+# created for the v* tag. Default GITHUB_TOKEN is read-only, which causes the
+# upload step to 403.
+permissions:
+  contents: write
+
 jobs:
   build-macos:
     name: Build macOS (Apple Silicon)
