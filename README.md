@@ -47,9 +47,9 @@ npm run tauri:dev
 
 ### Windows ビルド(`.github/workflows/windows-build.yml`)
 
-`windows-latest` で `tauri build -b none` を回し、出力された `MochiPDF.exe` と WebView2 Fixed Runtime を `MochiPDF-windows-portable.zip` にまとめます。`v*` タグ push 時はドラフトリリースに自動添付。
+`windows-latest` で `tauri build --no-bundle` を回し、出力された `MochiPDF.exe` と WebView2 Fixed Runtime を `MochiPDF-windows-portable.zip` にまとめます。`v*` タグ push 時はドラフトリリースに自動添付。
 
-ローカルで同等のものを作るには、`src-tauri/Microsoft.WebView2.FixedVersionRuntime.<ver>.x64/` に WebView2 Fixed Runtime を配置してから `npm run tauri:build -- --target x86_64-pc-windows-msvc -b none` を実行し、生成された `MochiPDF.exe` と Runtime フォルダを zip 化してください。WebView2 Fixed Runtime は [Microsoft の WebView2 ページ](https://developer.microsoft.com/microsoft-edge/webview2/) または [westinyang/WebView2RuntimeArchive](https://github.com/westinyang/WebView2RuntimeArchive/releases) から取得できます(CI 使用バージョン: `133.0.3065.92`)。
+ローカルで同等のものを作るには、`src-tauri/Microsoft.WebView2.FixedVersionRuntime.<ver>.x64/` に WebView2 Fixed Runtime を配置してから `npm run tauri:build -- --target x86_64-pc-windows-msvc --no-bundle` を実行し、生成された `MochiPDF.exe` と Runtime フォルダを zip 化してください。WebView2 Fixed Runtime は [Microsoft の WebView2 ページ](https://developer.microsoft.com/microsoft-edge/webview2/) または [westinyang/WebView2RuntimeArchive](https://github.com/westinyang/WebView2RuntimeArchive/releases) から取得できます(CI 使用バージョン: `133.0.3065.92`)。
 
 ### macOS ビルド(`.github/workflows/macos-build.yml`)
 

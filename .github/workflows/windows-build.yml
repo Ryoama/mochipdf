@@ -70,7 +70,7 @@ jobs:
           Get-ChildItem $dest | Select-Object Name, Length | Format-Table -AutoSize
 
       - name: Build Tauri app (executable only — installers disabled)
-        run: npm run tauri:build -- --target x86_64-pc-windows-msvc -b none --verbose
+        run: npm run tauri:build -- --target x86_64-pc-windows-msvc --no-bundle --verbose
 
       - name: List build outputs
         if: always()

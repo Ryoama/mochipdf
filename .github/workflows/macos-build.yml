@@ -43,7 +43,7 @@ jobs:
         run: npm ci
 
       - name: Build Tauri app (universal .app + .dmg)
-        run: npm run tauri:build -- --target universal-apple-darwin --bundles app,dmg --verbose
+        run: npm run tauri:build -- --target universal-apple-darwin -b app -b dmg --verbose
 
       - name: List build outputs
         if: always()
