@@ -43,9 +43,26 @@ jobs:
         run: npm ci
 
       - name: Build Tauri app (MSI + NSIS)
-        run: npm run tauri:build -- --target x86_64-pc-windows-msvc --bundles msi nsis
+        run: npm run tauri:build -- --target x86_64-pc-windows-msvc -b msi -b nsis --verbose
+
+      - name: List build outputs
+        if: always()
+        shell: pwsh
+        run: |
+          $base = "src-tauri/target/x86_64-pc-windows-msvc/release"
+          if (Test-Path $base) {
+            Write-Host "=== $base ==="
+            Get-ChildItem $base -File | Format-Table Name, Length
+            if (Test-Path "$base/bundle") {
+              Write-Host "=== $base/bundle ==="
+              Get-ChildItem "$base/bundle" -Recurse -File | Select-Object FullName, Length | Format-Table -AutoSize
+            }
+          } else {
+            Write-Host "Build output dir does not exist: $base"
+          }
 
       - name: Upload MSI artifact
+        if: success()
         uses: actions/upload-artifact@v4
         with:
           name: MochiPDF-windows-msi
@@ -53,6 +70,7 @@ jobs:
           if-no-files-found: error
 
       - name: Upload NSIS installer artifact
+        if: success()
         uses: actions/upload-artifact@v4
         with:
           name: MochiPDF-windows-nsis
@@ -60,19 +78,20 @@ jobs:
           if-no-files-found: error
 
       - name: Upload portable exe artifact
+        if: success()
         uses: actions/upload-artifact@v4
         with:
           name: MochiPDF-windows-portable
-          path: src-tauri/target/x86_64-pc-windows-msvc/release/MochiPDF.exe
-          if-no-files-found: error
+          path: src-tauri/target/x86_64-pc-windows-msvc/release/mochi-pdf.exe
+          if-no-files-found: warn
 
       - name: Attach to GitHub Release
-        if: startsWith(github.ref, 'refs/tags/v')
+        if: success() && startsWith(github.ref, 'refs/tags/v')
         uses: softprops/action-gh-release@v2
         with:
           files: |
             src-tauri/target/x86_64-pc-windows-msvc/release/bundle/msi/*.msi
             src-tauri/target/x86_64-pc-windows-msvc/release/bundle/nsis/*.exe
-            src-tauri/target/x86_64-pc-windows-msvc/release/MochiPDF.exe
+            src-tauri/target/x86_64-pc-windows-msvc/release/mochi-pdf.exe
           draft: true
           fail_on_unmatched_files: false
