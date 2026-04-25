@@ -78,6 +78,16 @@ npm run tauri:build -- --target x86_64-pc-windows-msvc --bundles msi nsis
 
 ローカルでこの portable zip を作るには、`src-tauri/Microsoft.WebView2.FixedVersionRuntime.<ver>.x64/` に WebView2 Fixed Runtime を配置してから `tauri build` してください。WebView2 Fixed Runtime は [Microsoft の WebView2 ページ](https://developer.microsoft.com/microsoft-edge/webview2/) または [westinyang/WebView2RuntimeArchive](https://github.com/westinyang/WebView2RuntimeArchive/releases) から取得できます。CI ではバージョン `133.0.3065.92` を使用しています。
 
+## ランディングサイト(Vercel)
+
+`website/` 配下にプロモーションサイト一式があり、ルートの `vercel.json` で `outputDirectory: "website"` に設定済みです。Vercel に GitHub 連携でインポートするだけで自動デプロイされます。詳しくは [`website/README.md`](./website/README.md) を参照。
+
+サイトには以下のダウンロード導線を用意しています:
+
+- 最新リリース(MSI / NSIS / ポータブル zip): <https://github.com/Ryoama/mochipdf/releases/latest>
+- ソース zip: <https://github.com/Ryoama/mochipdf/archive/refs/heads/main.zip>
+- GitHub リポ: <https://github.com/Ryoama/mochipdf>
+
 ## ブランドカラー
 
 | 役割 | 色 |

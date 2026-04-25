@@ -1,0 +1,235 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>もちPDF — かわいい PDF ビューア&エディタ</title>
+    <meta name="description" content="もちPDF は Windows / Mac 対応のかわいい PDF ビューア&エディタ。閲覧・結合・ページ編集・しおり・付箋まで。インストール不要のポータブル版もあります。" />
+    <meta property="og:title" content="もちPDF — かわいい PDF ビューア&エディタ" />
+    <meta property="og:description" content="閲覧・結合・ページ編集・しおり・付箋まで。Windows / Mac 対応の Tauri ネイティブアプリ。" />
+    <meta property="og:type" content="website" />
+    <meta property="og:image" content="./assets/brand-logo.png" />
+    <link rel="icon" type="image/png" href="./assets/favicon.png" />
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <a class="brand" href="#top">
+        <img class="brand-logo" src="./assets/brand-logo.png" alt="もちPDF ロゴ" />
+        <span class="brand-text">
+          <span class="brand-mochi">もち</span><span class="brand-pdf">PDF</span>
+        </span>
+      </a>
+      <nav class="site-nav">
+        <a href="#features">機能</a>
+        <a href="#download">ダウンロード</a>
+        <a href="https://github.com/Ryoama/mochipdf" target="_blank" rel="noopener">GitHub</a>
+      </nav>
+    </header>
+
+    <main id="top">
+      <section class="hero">
+        <div class="hero-inner">
+          <h1>
+            <span class="hero-title-mochi">もち</span><span class="hero-title-pdf">PDF</span>
+          </h1>
+          <p class="hero-tagline">かわいい PDF ビューア &amp; エディタ</p>
+          <p class="hero-sub">
+            閲覧・結合・ページ編集・しおり・付箋まで。<br />
+            Windows / Mac 対応の軽量ネイティブアプリ。
+          </p>
+          <div class="hero-cta">
+            <a class="btn btn-primary" href="https://github.com/Ryoama/mochipdf/releases/latest" target="_blank" rel="noopener">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                <polyline points="7 10 12 15 17 10" />
+                <line x1="12" y1="15" x2="12" y2="3" />
+              </svg>
+              <span>最新版をダウンロード</span>
+            </a>
+            <a class="btn btn-secondary" href="https://github.com/Ryoama/mochipdf" target="_blank" rel="noopener">
+              <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                <path d="M12 .5C5.65.5.5 5.65.5 12c0 5.08 3.29 9.39 7.86 10.91.58.11.79-.25.79-.56v-2.01c-3.2.7-3.87-1.37-3.87-1.37-.52-1.32-1.27-1.67-1.27-1.67-1.04-.71.08-.7.08-.7 1.15.08 1.76 1.18 1.76 1.18 1.02 1.75 2.68 1.25 3.34.96.1-.74.4-1.25.72-1.54-2.55-.29-5.24-1.28-5.24-5.69 0-1.26.45-2.28 1.18-3.08-.12-.29-.51-1.46.11-3.04 0 0 .97-.31 3.18 1.18a11.05 11.05 0 0 1 5.79 0c2.21-1.49 3.18-1.18 3.18-1.18.62 1.58.23 2.75.11 3.04.74.8 1.18 1.82 1.18 3.08 0 4.42-2.69 5.39-5.26 5.68.41.36.78 1.06.78 2.14v3.17c0 .31.21.68.8.56C20.21 21.39 23.5 17.08 23.5 12 23.5 5.65 18.35.5 12 .5z" />
+              </svg>
+              <span>GitHub で見る</span>
+            </a>
+          </div>
+          <p class="hero-meta">無料・オープンソース ・ Windows 10+ / macOS 12+</p>
+        </div>
+        <div class="hero-illust" aria-hidden="true">
+          <img src="./assets/brand-logo.png" alt="" />
+        </div>
+      </section>
+
+      <section id="features" class="features">
+        <h2 class="section-title">機能</h2>
+        <div class="feature-grid">
+          <article class="feature-card">
+            <div class="feature-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M3 5h7a3 3 0 0 1 3 3v12a2 2 0 0 0-2-2H3z" />
+                <path d="M21 5h-7a3 3 0 0 0-3 3v12a2 2 0 0 1 2-2h8z" />
+              </svg>
+            </div>
+            <h3>閲覧</h3>
+            <p>単ページ表示、ズーム、ページ送り、しおり・付箋パネルでサクサク読めます。</p>
+          </article>
+
+          <article class="feature-card">
+            <div class="feature-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="4" width="7" height="7" rx="1" />
+                <rect x="14" y="4" width="7" height="7" rx="1" />
+                <rect x="3" y="15" width="7" height="6" rx="1" />
+                <rect x="14" y="15" width="7" height="6" rx="1" />
+              </svg>
+            </div>
+            <h3>ページ編集</h3>
+            <p>タイル表示でドラッグ&amp;ドロップで並べ替え、選択ページの一括削除・回転・抽出。</p>
+          </article>
+
+          <article class="feature-card">
+            <div class="feature-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="4" y="3" width="11" height="14" rx="1.5" />
+                <rect x="9" y="7" width="11" height="14" rx="1.5" />
+              </svg>
+            </div>
+            <h3>結合</h3>
+            <p>複数 PDF をドラッグ&amp;ドロップで順序指定して、ひとつにまとめます。</p>
+          </article>
+
+          <article class="feature-card">
+            <div class="feature-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 3v18" />
+                <path d="M5 8h14" />
+                <path d="M5 16h14" />
+              </svg>
+            </div>
+            <h3>分割</h3>
+            <p>N ページごと / しおり単位 / ファイルサイズごとなど、柔軟に分割。</p>
+          </article>
+
+          <article class="feature-card">
+            <div class="feature-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="4" y="3" width="14" height="18" rx="1.5" />
+                <line x1="8" y1="8" x2="14" y2="8" />
+                <line x1="8" y1="12" x2="14" y2="12" />
+                <line x1="8" y1="16" x2="12" y2="16" />
+                <path d="m18 14 4 4-4 4z" fill="currentColor" />
+              </svg>
+            </div>
+            <h3>しおり</h3>
+            <p>追加・編集・削除して PDF アウトラインに書き戻し。階層構造もそのまま保持。</p>
+          </article>
+
+          <article class="feature-card">
+            <div class="feature-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="4" y="4" width="16" height="16" rx="2" />
+                <path d="M9 10h6" />
+                <path d="M9 14h4" />
+                <circle cx="17" cy="7" r="2" fill="currentColor" stroke="none" />
+              </svg>
+            </div>
+            <h3>付箋</h3>
+            <p>ページの好きな位置をクリックで付箋を配置。ドラッグで移動、本文は常時表示。</p>
+          </article>
+        </div>
+      </section>
+
+      <section id="download" class="download">
+        <h2 class="section-title">ダウンロード</h2>
+        <p class="download-lead">お使いの環境に合わせて選んでください。</p>
+
+        <div class="download-grid">
+          <article class="download-card download-card-primary">
+            <div class="download-os">
+              <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                <path d="M0 3.449L9.75 2.1v9.451H0m10.949-9.602L24 0v11.4H10.949M0 12.6h9.75v9.451L0 20.699M10.949 12.6H24V24l-13.051-1.851" />
+              </svg>
+              <span>Windows</span>
+            </div>
+            <h3>Windows 版</h3>
+            <ul class="download-list">
+              <li><strong>MSI / NSIS インストーラ</strong> — `.pdf` 関連付け対応</li>
+              <li><strong>ポータブル zip</strong> — 解凍してダブルクリックで起動。WebView2 同梱</li>
+            </ul>
+            <div class="download-actions">
+              <a class="btn btn-primary" href="https://github.com/Ryoama/mochipdf/releases/latest" target="_blank" rel="noopener">
+                最新リリースを開く
+              </a>
+            </div>
+            <p class="download-note">
+              リリースページから <code>.msi</code> / <code>.exe</code> / <code>_x64-portable.zip</code> を選んでダウンロードできます。
+            </p>
+          </article>
+
+          <article class="download-card">
+            <div class="download-os">
+              <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                <path d="M16.365 1.43c0 1.14-.493 2.27-1.177 3.08-.744.9-1.99 1.57-2.987 1.57-.12 0-.23-.02-.3-.03-.01-.06-.04-.22-.04-.39 0-1.15.572-2.27 1.206-2.98.804-.94 2.142-1.64 3.249-1.68.03.13.05.28.05.43zm4.565 15.71c-.03.07-.463 1.58-1.518 3.12-.945 1.34-1.94 2.71-3.43 2.71-1.517 0-1.9-.88-3.63-.88-1.698 0-2.302.91-3.67.91-1.377 0-2.332-1.26-3.428-2.8-1.287-1.82-2.323-4.63-2.323-7.28 0-4.28 2.797-6.55 5.552-6.55 1.448 0 2.675.95 3.6.95.865 0 2.222-1.01 3.902-1.01.613 0 2.886.06 4.374 2.19-.13.09-2.383 1.37-2.383 4.19 0 3.26 2.854 4.42 2.955 4.45z" />
+              </svg>
+              <span>macOS</span>
+            </div>
+            <h3>Mac 版</h3>
+            <ul class="download-list">
+              <li><strong>.app バンドル</strong> — Apple Silicon / Intel 対応</li>
+              <li>サイズは約 4MB と軽量</li>
+            </ul>
+            <div class="download-actions">
+              <a class="btn btn-primary" href="https://github.com/Ryoama/mochipdf/releases/latest" target="_blank" rel="noopener">
+                最新リリースを開く
+              </a>
+            </div>
+            <p class="download-note">
+              現時点では Mac 版はソースからのビルドを推奨しています。詳しくは README をご覧ください。
+            </p>
+          </article>
+
+          <article class="download-card">
+            <div class="download-os">
+              <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                <path d="M12 .5C5.65.5.5 5.65.5 12c0 5.08 3.29 9.39 7.86 10.91.58.11.79-.25.79-.56v-2.01c-3.2.7-3.87-1.37-3.87-1.37-.52-1.32-1.27-1.67-1.27-1.67-1.04-.71.08-.7.08-.7 1.15.08 1.76 1.18 1.76 1.18 1.02 1.75 2.68 1.25 3.34.96.1-.74.4-1.25.72-1.54-2.55-.29-5.24-1.28-5.24-5.69 0-1.26.45-2.28 1.18-3.08-.12-.29-.51-1.46.11-3.04 0 0 .97-.31 3.18 1.18a11.05 11.05 0 0 1 5.79 0c2.21-1.49 3.18-1.18 3.18-1.18.62 1.58.23 2.75.11 3.04.74.8 1.18 1.82 1.18 3.08 0 4.42-2.69 5.39-5.26 5.68.41.36.78 1.06.78 2.14v3.17c0 .31.21.68.8.56C20.21 21.39 23.5 17.08 23.5 12 23.5 5.65 18.35.5 12 .5z" />
+              </svg>
+              <span>ソース</span>
+            </div>
+            <h3>ソースコード</h3>
+            <ul class="download-list">
+              <li><strong>GitHub リポジトリ</strong> — Issue / PR はこちらから</li>
+              <li><strong>zip ダウンロード</strong> — main ブランチのスナップショット</li>
+            </ul>
+            <div class="download-actions">
+              <a class="btn btn-primary" href="https://github.com/Ryoama/mochipdf/archive/refs/heads/main.zip">
+                main を zip で取得
+              </a>
+              <a class="btn btn-secondary" href="https://github.com/Ryoama/mochipdf" target="_blank" rel="noopener">
+                GitHub を開く
+              </a>
+            </div>
+            <p class="download-note">
+              <code>git clone https://github.com/Ryoama/mochipdf.git</code> でも取得できます。
+            </p>
+          </article>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="footer-inner">
+        <div class="footer-brand">
+          <img src="./assets/brand-logo.png" alt="" />
+          <span><span class="brand-mochi">もち</span><span class="brand-pdf">PDF</span></span>
+        </div>
+        <nav class="footer-nav">
+          <a href="https://github.com/Ryoama/mochipdf" target="_blank" rel="noopener">GitHub</a>
+          <a href="https://github.com/Ryoama/mochipdf/releases" target="_blank" rel="noopener">リリース</a>
+          <a href="https://github.com/Ryoama/mochipdf/issues" target="_blank" rel="noopener">Issue</a>
+        </nav>
+        <p class="footer-copy">© MochiPDF</p>
+      </div>
+    </footer>
+  </body>
+</html>
