@@ -1,0 +1,368 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>もちPDF</title>
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body>
+    <div id="app" class="sidebar-expanded">
+      <!-- ============= サイドナビ ============= -->
+      <aside class="navbar">
+        <div class="brand">
+          <div class="brand-logo-wrap">
+            <svg class="brand-logo" viewBox="0 0 48 48" aria-hidden="true">
+              <!-- 影 -->
+              <ellipse cx="23" cy="43" rx="15" ry="1.6" fill="#F6EFE3" opacity="0.7"/>
+              <!-- もち本体 -->
+              <path d="M 24,5
+                C 34,5 42,12 42,23
+                C 43,33 36,41 25,41
+                C 14,42 5,34 6,23
+                C 6,13 14,5 24,5 Z"
+                fill="#FFFFFF" stroke="#F6EFE3" stroke-width="1"/>
+              <!-- 目 -->
+              <ellipse cx="17" cy="21" rx="1.3" ry="1.7" fill="#333333"/>
+              <ellipse cx="27" cy="21" rx="1.3" ry="1.7" fill="#333333"/>
+              <!-- 口 -->
+              <path d="M 19,27 Q 22,30 25,27" stroke="#333333" stroke-width="1.4"
+                fill="none" stroke-linecap="round"/>
+              <!-- ほっぺ -->
+              <ellipse cx="12" cy="26" rx="2.1" ry="1.3" fill="#FFB5B5" opacity="0.7"/>
+              <ellipse cx="32" cy="26" rx="2.1" ry="1.3" fill="#FFB5B5" opacity="0.7"/>
+              <!-- PDFドキュメント -->
+              <g transform="translate(29, 27) rotate(12)">
+                <rect width="13" height="14" rx="1.6" fill="#FFD766"/>
+                <circle cx="3.8" cy="4.8" r="0.9" fill="#FFFFFF"/>
+                <circle cx="9.2" cy="4.8" r="0.9" fill="#FFFFFF"/>
+                <circle cx="3.8" cy="9.2" r="0.9" fill="#FFFFFF"/>
+                <circle cx="9.2" cy="9.2" r="0.9" fill="#FFFFFF"/>
+              </g>
+              <!-- キラッ -->
+              <path d="M 41,7 L 42,10 L 45,11 L 42,12 L 41,15 L 40,12 L 37,11 L 40,10 Z"
+                fill="#FFB800"/>
+            </svg>
+            <div class="brand-text">
+              <span class="brand-mochi">もち</span>
+              <span class="brand-pdf">PDF</span>
+            </div>
+          </div>
+        </div>
+
+        <nav class="navbar-menu">
+          <button class="nav-item active" data-view="home" title="ホーム">
+            <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11.5 12 4l9 7.5"/><path d="M5 10v10h14V10"/><path d="M10 20v-6h4v6"/></svg>
+            <span class="nav-label">ホーム</span>
+          </button>
+          <button class="nav-item" data-view="merge" title="PDFを結合">
+            <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="11" height="14" rx="1.5"/><rect x="9" y="7" width="11" height="14" rx="1.5"/></svg>
+            <span class="nav-label">PDFを結合</span>
+          </button>
+          <button class="nav-item" data-view="viewer" title="PDFを閲覧">
+            <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 5h7a3 3 0 0 1 3 3v12a2 2 0 0 0-2-2H3z"/><path d="M21 5h-7a3 3 0 0 0-3 3v12a2 2 0 0 1 2-2h8z"/></svg>
+            <span class="nav-label">PDFを閲覧</span>
+          </button>
+          <button class="nav-item" data-view="editor" title="ページを編集">
+            <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="7" height="7" rx="1"/><rect x="14" y="4" width="7" height="7" rx="1"/><rect x="3" y="15" width="7" height="6" rx="1"/><rect x="14" y="15" width="7" height="6" rx="1"/></svg>
+            <span class="nav-label">ページを編集</span>
+          </button>
+        </nav>
+
+        <button class="nav-item nav-bottom nav-toggle" id="btn-sidebar-toggle" title="サイドバーを切り替え">
+          <svg class="nav-icon nav-toggle-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="4" width="18" height="16" rx="2"/>
+            <line x1="10" y1="4" x2="10" y2="20"/>
+            <path d="m16 10-2 2 2 2"/>
+          </svg>
+          <span class="nav-label">たたむ</span>
+        </button>
+      </aside>
+
+      <!-- ============= メイン領域 ============= -->
+      <main class="main-area">
+
+        <!-- =========== ホーム =========== -->
+        <section class="view view-home active" data-view="home">
+          <div class="home-inner">
+            <h1>もち PDF へようこそ</h1>
+            <p class="home-sub">PDF の結合・閲覧・ページ編集を、シンプルな操作で。</p>
+
+            <div class="home-cards">
+              <article class="home-card" data-action="merge">
+                <div class="home-card-illust">
+                  <svg viewBox="0 0 100 80" fill="none" stroke="#9ea4ad" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="14" y="14" width="42" height="56" rx="3" fill="#fff"/>
+                    <line x1="22" y1="28" x2="48" y2="28"/>
+                    <line x1="22" y1="36" x2="48" y2="36"/>
+                    <line x1="22" y1="44" x2="40" y2="44"/>
+                    <rect x="36" y="6" width="42" height="56" rx="3" fill="#fff"/>
+                    <line x1="44" y1="20" x2="70" y2="20"/>
+                    <line x1="44" y1="28" x2="70" y2="28"/>
+                    <line x1="44" y1="36" x2="62" y2="36"/>
+                    <circle cx="74" cy="56" r="11" fill="#FFD766" stroke="#FFD766"/>
+                    <line x1="74" y1="50" x2="74" y2="62" stroke="#fff" stroke-width="2.5"/>
+                    <line x1="68" y1="56" x2="80" y2="56" stroke="#fff" stroke-width="2.5"/>
+                  </svg>
+                </div>
+                <h3>PDFを結合</h3>
+                <p>複数のPDFファイルを<br/>1つにまとめます。</p>
+                <button class="home-btn">PDFを結合する <span class="arrow">›</span></button>
+              </article>
+
+              <article class="home-card" data-action="viewer">
+                <div class="home-card-illust">
+                  <svg viewBox="0 0 100 80" fill="none" stroke="#9ea4ad" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M50 18 C 40 12, 22 12, 14 16 L 14 64 C 22 60, 40 60, 50 66 Z" fill="#fff"/>
+                    <path d="M50 18 C 60 12, 78 12, 86 16 L 86 64 C 78 60, 60 60, 50 66 Z" fill="#fff"/>
+                    <line x1="50" y1="18" x2="50" y2="66"/>
+                    <line x1="22" y1="26" x2="42" y2="26"/>
+                    <line x1="22" y1="34" x2="42" y2="34"/>
+                    <line x1="22" y1="42" x2="38" y2="42"/>
+                    <line x1="58" y1="26" x2="78" y2="26"/>
+                    <line x1="58" y1="34" x2="78" y2="34"/>
+                    <line x1="58" y1="42" x2="74" y2="42"/>
+                    <circle cx="56" cy="50" r="9" fill="#FFD766" stroke="#FFD766"/>
+                    <circle cx="56" cy="50" r="5" fill="#fff" stroke="#fff"/>
+                    <line x1="62" y1="56" x2="68" y2="62" stroke="#FFD766" stroke-width="3" stroke-linecap="round"/>
+                  </svg>
+                </div>
+                <h3>PDFを閲覧</h3>
+                <p>PDFを開いて内容を<br/>確認・検索できます。</p>
+                <button class="home-btn">PDFを開く <span class="arrow">›</span></button>
+              </article>
+
+              <article class="home-card" data-action="editor">
+                <div class="home-card-illust">
+                  <svg viewBox="0 0 100 80" fill="none" stroke="#9ea4ad" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="14" y="14" width="26" height="22" rx="2" fill="#fff"/>
+                    <rect x="44" y="14" width="26" height="22" rx="2" fill="#fff"/>
+                    <rect x="74" y="14" width="12" height="22" rx="2" fill="#FFD766" stroke="#FFD766"/>
+                    <rect x="14" y="42" width="26" height="22" rx="2" fill="#fff"/>
+                    <rect x="44" y="42" width="26" height="22" rx="2" fill="#fff"/>
+                    <rect x="74" y="42" width="12" height="22" rx="2" fill="#fff"/>
+                  </svg>
+                </div>
+                <h3>ページを編集</h3>
+                <p>タイル表示で並べ替え・<br/>削除・回転ができます。</p>
+                <button class="home-btn">編集を始める <span class="arrow">›</span></button>
+              </article>
+            </div>
+          </div>
+        </section>
+
+        <!-- =========== 閲覧タブ =========== -->
+        <section class="view view-viewer" data-view="viewer">
+          <div class="editor-topbar">
+            <button class="btn btn-primary" id="btn-open">
+              <span class="btn-icon">📂</span>開く
+            </button>
+            <button class="btn btn-accent" id="btn-save" disabled>
+              <span class="btn-icon">💾</span>保存
+            </button>
+
+            <span class="topbar-sep"></span>
+
+            <button class="tool-btn" id="btn-page-prev" disabled>◀</button>
+            <span class="page-indicator">
+              <input type="number" id="page-input" min="1" value="0" disabled />
+              <span>/ <span id="page-total">0</span></span>
+            </span>
+            <button class="tool-btn" id="btn-page-next" disabled>▶</button>
+
+            <span class="topbar-sep"></span>
+
+            <button class="icon-btn" id="btn-zoom-out" title="縮小" disabled>−</button>
+            <span class="zoom-label" id="zoom-label">100%</span>
+            <button class="icon-btn" id="btn-zoom-in" title="拡大" disabled>＋</button>
+            <button class="icon-btn" id="btn-zoom-fit" title="幅に合わせる" disabled>↔</button>
+
+            <span class="topbar-sep"></span>
+
+            <button class="icon-btn" id="btn-toggle-side" title="しおり・付箋パネルの表示/非表示">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px">
+                <rect x="3" y="4" width="18" height="16" rx="2"/>
+                <line x1="15" y1="4" x2="15" y2="20"/>
+              </svg>
+            </button>
+
+            <span class="status-text" id="status-text">準備OK</span>
+            <span class="status-file" id="status-file"></span>
+          </div>
+
+          <div class="viewer-body" id="viewer-body">
+            <aside class="viewer-side">
+              <div class="editor-tabs">
+                <button class="etab active" data-etab="bookmarks">しおり</button>
+                <button class="etab" data-etab="notes">付箋</button>
+              </div>
+
+              <div class="etab-panel active" data-epanel="bookmarks">
+                <div class="epanel-head">
+                  <span>しおり一覧</span>
+                  <button class="mini-btn" id="btn-add-bookmark" disabled>＋今のページに追加</button>
+                </div>
+                <div class="bookmark-list" id="bookmark-list">
+                  <div class="empty-state">PDFを開くと<br/>しおりが表示されます</div>
+                </div>
+              </div>
+
+              <div class="etab-panel" data-epanel="notes">
+                <div class="epanel-head">
+                  <span>付箋メモ</span>
+                  <button class="mini-btn" id="btn-add-note" disabled>＋貼る</button>
+                </div>
+                <div class="note-list" id="note-list">
+                  <div class="empty-state">「＋貼る」を押してから<br/>ページの好きな場所をクリック</div>
+                </div>
+              </div>
+            </aside>
+
+            <section class="viewer-main">
+              <div class="viewer" id="viewer">
+                <div class="viewer-empty" id="viewer-empty">
+                  <div class="viewer-empty-icon">
+                    <svg viewBox="0 0 80 80" fill="none" stroke="#cfd3da" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M22 10 L 52 10 L 64 22 L 64 70 L 22 70 Z" fill="#fff"/>
+                      <path d="M52 10 L 52 22 L 64 22"/>
+                    </svg>
+                  </div>
+                  <p>「開く」または PDFをここに<br/>ドラッグ&ドロップしてください</p>
+                </div>
+                <div class="page-canvas-wrap" id="canvas-wrap" hidden>
+                  <canvas id="page-canvas"></canvas>
+                  <div class="annot-layer" id="annot-layer"></div>
+                </div>
+                <div class="mode-banner" id="note-mode-banner" hidden>
+                  <span>📝 ページの好きな場所をクリックして付箋を貼る</span>
+                  <button class="mini-btn" id="btn-exit-note-mode">終了 (ESC)</button>
+                </div>
+              </div>
+            </section>
+          </div>
+        </section>
+
+        <!-- =========== 編集タブ(タイルグリッド) =========== -->
+        <section class="view view-editor" data-view="editor">
+          <div class="editor-topbar">
+            <button class="btn btn-primary" id="btn-open-editor">
+              <span class="btn-icon">📂</span>開く
+            </button>
+            <button class="btn btn-accent" id="btn-save-editor" disabled>
+              <span class="btn-icon">💾</span>保存
+            </button>
+
+            <span class="topbar-sep"></span>
+
+            <span class="selection-info" id="selection-info">ページ未選択</span>
+
+            <button class="tool-btn" id="btn-select-all" disabled>全選択</button>
+            <button class="tool-btn" id="btn-select-none" disabled>選択解除</button>
+
+            <span class="topbar-sep"></span>
+
+            <button class="tool-btn" id="btn-rotate-l-sel" disabled title="選択ページを左回転">↺</button>
+            <button class="tool-btn" id="btn-rotate-r-sel" disabled title="選択ページを右回転">↻</button>
+            <button class="tool-btn tool-danger" id="btn-delete-sel" disabled title="選択ページを削除">🗑 削除</button>
+            <button class="tool-btn" id="btn-extract-sel" disabled>📤 抽出</button>
+
+            <span class="topbar-sep"></span>
+
+            <button class="tool-btn" id="btn-insert-blank" disabled>＋空白</button>
+            <button class="tool-btn" id="btn-insert-image" disabled>＋画像</button>
+            <button class="tool-btn" id="btn-insert-pdf" disabled>＋別PDF</button>
+            <button class="tool-btn" id="btn-split" disabled>✂ 分割</button>
+          </div>
+
+          <div class="editor-grid-wrap" id="editor-grid-wrap">
+            <div class="editor-empty" id="editor-empty">
+              <div class="viewer-empty-icon">
+                <svg viewBox="0 0 80 80" fill="none" stroke="#cfd3da" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="8" y="8" width="24" height="24" rx="2" fill="#fff"/>
+                  <rect x="40" y="8" width="24" height="24" rx="2" fill="#fff"/>
+                  <rect x="8" y="40" width="24" height="24" rx="2" fill="#fff"/>
+                  <rect x="40" y="40" width="24" height="24" rx="2" fill="#fff"/>
+                </svg>
+              </div>
+              <p>「開く」または PDFをここに<br/>ドラッグ&ドロップしてください</p>
+            </div>
+            <div class="editor-grid" id="editor-grid" hidden></div>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <!-- 分割モーダル -->
+    <div class="modal-backdrop" id="modal-split" hidden>
+      <div class="modal" data-modal-content>
+        <button class="modal-close" type="button" data-close-modal title="閉じる">✕</button>
+        <h2>ページの分割</h2>
+        <div class="modal-body">
+          <label class="radio">
+            <input type="radio" name="split-mode" value="every" checked />
+            <span>Nページごとに分割</span>
+            <input type="number" id="split-every-n" min="1" value="1" class="modal-input-inline" />
+          </label>
+          <label class="radio">
+            <input type="radio" name="split-mode" value="bookmark" />
+            <span>しおり単位で分割</span>
+          </label>
+          <label class="radio">
+            <input type="radio" name="split-mode" value="size" />
+            <span>ファイルサイズ(MB)ごとに分割</span>
+            <input type="number" id="split-size-mb" min="0.1" step="0.1" value="5" class="modal-input-inline" />
+          </label>
+        </div>
+        <div class="modal-actions">
+          <button class="btn" id="modal-split-cancel">キャンセル</button>
+          <button class="btn btn-primary" id="modal-split-run">分割する</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 結合モーダル -->
+    <div class="modal-backdrop" id="modal-merge" hidden>
+      <div class="modal" data-modal-content>
+        <button class="modal-close" type="button" data-close-modal title="閉じる">✕</button>
+        <h2>PDFの結合</h2>
+        <div class="modal-body">
+          <p class="modal-help">ドラッグで並べ替えできます</p>
+          <div class="merge-list" id="merge-list"></div>
+          <button class="btn" id="merge-add-file">＋ファイル追加</button>
+        </div>
+        <div class="modal-actions">
+          <button class="btn" id="modal-merge-cancel">キャンセル</button>
+          <button class="btn btn-primary" id="modal-merge-run">結合する</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 入力モーダル(付箋メモ用) -->
+    <div class="modal-backdrop" id="modal-input" hidden>
+      <div class="modal" data-modal-content>
+        <button class="modal-close" type="button" data-close-modal title="閉じる">✕</button>
+        <h2 id="modal-input-title">入力</h2>
+        <div class="modal-body">
+          <p class="modal-help" id="modal-input-help" hidden></p>
+          <textarea id="modal-input-textarea" class="modal-input" rows="4" placeholder=""></textarea>
+        </div>
+        <div class="modal-actions">
+          <button class="btn" id="modal-input-cancel">キャンセル</button>
+          <button class="btn" id="modal-input-delete" hidden>削除</button>
+          <button class="btn btn-primary" id="modal-input-ok">OK</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="drop-overlay" id="drop-overlay" hidden>
+      <div class="drop-message">
+        <div class="drop-icon">⬇</div>
+        <p>PDFをここに落としてね</p>
+      </div>
+    </div>
+
+    <div class="toast-container" id="toast-container"></div>
+
+    <script type="module" src="./main.js"></script>
+  </body>
+</html>
