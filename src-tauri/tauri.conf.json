@@ -86,6 +86,9 @@
         "languages": ["English", "Japanese"],
         "displayLanguageSelector": true
       }
+    },
+    "macOS": {
+      "signingIdentity": "-"
     }
   }
 }
