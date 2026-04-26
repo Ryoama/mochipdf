@@ -13,23 +13,18 @@ const LINKS = {
   sponsors: "https://github.com/sponsors/Ryoama",
   sourceZip: "https://github.com/Ryoama/mochipdf/archive/refs/heads/main.zip",
   winPortable: `${DL_BASE}/MochiPDF-windows-portable.zip`,
-  macApp: `${DL_BASE}/MochiPDF-mac.dmg`,
 };
 
 function detectOS() {
   if (typeof navigator === "undefined") return "other";
   const ua = (navigator.userAgent || "").toLowerCase();
   if (/win/.test(ua)) return "windows";
-  if (/mac|iphone|ipad|ipod/.test(ua)) return "mac";
   if (/linux/.test(ua)) return "linux";
   return "other";
 }
 
-// Hero CTA target: if we can guess the OS, deep-link straight to its asset;
-// otherwise default to the Windows portable since that's the primary build.
+// Hero CTA target: Windows is the only build right now, so always point at it.
 function pickHeroDownloadHref() {
-  const os = detectOS();
-  if (os === "mac") return LINKS.macApp;
   return LINKS.winPortable;
 }
 
@@ -246,29 +241,26 @@ function Specs({ t }) {
         <h2 className="section-title">{t.specs.title}</h2>
         <p className="section-sub">{t.specs.sub}</p>
         <div className="specs">
-          {[t.specs.win, t.specs.mac].map((s, i) => {
-            const dlHref = i === 0 ? LINKS.winPortable : LINKS.macApp;
-            return (
-              <div className="spec-card" key={i}>
-                <div className="head">
-                  <div className="os-icon">{i===0 ? <Ic.Window/> : <Ic.Apple/>}</div>
-                  <div>
-                    <h3>{s.os}</h3>
-                    <div className="ver">{s.ver}</div>
-                  </div>
-                </div>
-                <dl className="spec-list">
-                  <div className="row"><dt>{t.specs.label.cpu}</dt><dd>{s.cpu}</dd></div>
-                  <div className="row"><dt>{t.specs.label.ram}</dt><dd>{s.ram}</dd></div>
-                  <div className="row"><dt>{t.specs.label.disk}</dt><dd>{s.disk}</dd></div>
-                  <div className="row"><dt>{t.specs.label.net}</dt><dd>{s.net}</dd></div>
-                </dl>
-                <div className="dl">
-                  <a className="btn btn-primary" href={dlHref} style={{padding:'10px 16px',fontSize:'13px'}}><Ic.Download size={14}/> {t.specs.download}</a>
+          {[t.specs.win].map((s, i) => (
+            <div className="spec-card" key={i}>
+              <div className="head">
+                <div className="os-icon"><Ic.Window/></div>
+                <div>
+                  <h3>{s.os}</h3>
+                  <div className="ver">{s.ver}</div>
                 </div>
               </div>
-            );
-          })}
+              <dl className="spec-list">
+                <div className="row"><dt>{t.specs.label.cpu}</dt><dd>{s.cpu}</dd></div>
+                <div className="row"><dt>{t.specs.label.ram}</dt><dd>{s.ram}</dd></div>
+                <div className="row"><dt>{t.specs.label.disk}</dt><dd>{s.disk}</dd></div>
+                <div className="row"><dt>{t.specs.label.net}</dt><dd>{s.net}</dd></div>
+              </dl>
+              <div className="dl">
+                <a className="btn btn-primary" href={LINKS.winPortable} style={{padding:'10px 16px',fontSize:'13px'}}><Ic.Download size={14}/> {t.specs.download}</a>
+              </div>
+            </div>
+          ))}
         </div>
       </div>
     </section>
@@ -276,8 +268,8 @@ function Specs({ t }) {
 }
 
 function Download({ t }) {
-  const icons = [Ic.Window, Ic.Apple, Ic.Folder];
-  const hrefs = [LINKS.winPortable, LINKS.macApp, LINKS.sourceZip];
+  const icons = [Ic.Window, Ic.Folder];
+  const hrefs = [LINKS.winPortable, LINKS.sourceZip];
   return (
     <section className="section" id="download">
       <div className="container">
