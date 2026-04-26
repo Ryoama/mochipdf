@@ -65,21 +65,32 @@ jobs:
             ls -R "src-tauri/target" 2>/dev/null | head -200 || true
           fi
 
-      - name: Stage stable-named release artifact
+      - name: Ad-hoc sign .app and stage repacked DMG
         if: success()
         shell: bash
         run: |
           set -euo pipefail
-          stage="release-stage"
-          rm -rf "$stage" && mkdir -p "$stage"
-
-          dmg=$(find src-tauri/target/aarch64-apple-darwin/release/bundle/dmg -type f -name '*.dmg' 2>/dev/null | head -n1 || true)
-          if [ -z "$dmg" ]; then
-            echo "::error::No .dmg found under bundle/dmg"
-            find src-tauri/target -type f -name '*.dmg' 2>/dev/null || true
+          base="src-tauri/target/aarch64-apple-darwin/release"
+          app="$base/bundle/macos/MochiPDF.app"
+          if [ ! -d "$app" ]; then
+            echo "::error::App bundle not found at $app"
+            find src-tauri/target -type d -name '*.app' 2>/dev/null || true
             exit 1
           fi
-          cp "$dmg" "$stage/MochiPDF-mac.dmg"
+
+          echo "=== Ad-hoc codesign .app (deep) ==="
+          codesign --force --deep --sign - "$app"
+          codesign -dv "$app" 2>&1 | sed 's/^/  /'
+          codesign --verify --verbose=2 "$app" 2>&1 | sed 's/^/  /'
+
+          echo "=== Repack DMG with signed .app ==="
+          stage="release-stage"
+          rm -rf "$stage" && mkdir -p "$stage"
+          work=$(mktemp -d)
+          cp -R "$app" "$work/"
+          ln -s /Applications "$work/Applications"
+          hdiutil create -volname "MochiPDF" -srcfolder "$work" \
+            -ov -format UDZO "$stage/MochiPDF-mac.dmg"
           ls -la "$stage"
 
       - name: Upload .dmg artifact
