@@ -1,0 +1,34 @@
+# Tauri デスクトップアプリ側はサイトデプロイに不要
+src/
+src-tauri/
+dist/
+_site/
+.vite/
+
+# Node 依存とパッケージ定義(配布サイトでは使わない)
+node_modules/
+package.json
+package-lock.json
+vite.config.js
+
+# remake のソース(参照用、配布サイトには含めない)
+"もちPDF_remake/"
+
+# サイトビルド用スクリプト(静的配信なので不要)
+scripts/
+
+# CI / IDE / OS
+.github/
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# ログ
+*.log
+logs/
+
+# その他
+*.local
+.env
+.env.local

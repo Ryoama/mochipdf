@@ -28,55 +28,45 @@ npm install
 npm run tauri:build
 ```
 
-生成物:
-
-- Mac: `src-tauri/target/release/bundle/macos/MochiPDF.app`
-- Windows (MSI): `src-tauri/target/release/bundle/msi/MochiPDF_<ver>_x64_en-US.msi`
-- Windows (NSIS): `src-tauri/target/release/bundle/nsis/MochiPDF_<ver>_x64-setup.exe`
-- Windows (ポータブル): `src-tauri/target/release/MochiPDF.exe`
-
 開発モード:
 
 ```bash
 npm run tauri:dev
 ```
 
-## Windows 版
+配布バイナリは GitHub Actions で自動生成しています(下記)。CI からは **インストーラは生成せず、Windows ポータブル zip / macOS Universal `.dmg` のみ**を出力します。
 
-Windows 版は Tauri 2 の MSVC ターゲットでビルドします。Mac から `.msi` / `.exe` を直接生成することはできないため、以下のいずれかの方法で生成してください。
+## 配布物(GitHub Actions)
 
-### A. ローカル(Windows マシン)でビルド
+| OS | ファイル名(固定) | 中身 |
+| --- | --- | --- |
+| Windows | `MochiPDF-windows-portable.zip` | 解凍して `MochiPDF.exe` をダブルクリックで起動。WebView2 Fixed Runtime 同梱(zip サイズ ~180MB) |
+| macOS | `MochiPDF-mac.dmg` | Apple Silicon (M シリーズ) 用。マウントして `MochiPDF.app` を Applications にドラッグ。Intel Mac では Rosetta 2 経由で動作 |
 
-前提:
+ファイル名にはバージョン番号を入れていないため、ランディングサイトから `https://github.com/Ryoama/mochipdf/releases/latest/download/<ファイル名>` で常に最新版を直リンクできます。
 
-- Node.js 20+
-- Rust(`rustup` から `stable-x86_64-pc-windows-msvc`)
-- Microsoft C++ Build Tools(Visual Studio Installer の「C++ によるデスクトップ開発」)
-- WebView2 Runtime(Windows 11 はプリインストール済み)
+### Windows ビルド(`.github/workflows/windows-build.yml`)
 
-```powershell
-npm install
-npm run tauri:build -- --target x86_64-pc-windows-msvc --bundles msi nsis
-```
+`windows-latest` で `tauri build --no-bundle` を回し、出力された `MochiPDF.exe` と WebView2 Fixed Runtime を `MochiPDF-windows-portable.zip` にまとめます。`v*` タグ push 時はドラフトリリースに自動添付。
 
-ビルド後、上記のパスに `.msi`(MSI インストーラ) / `.exe`(NSIS インストーラ) / `MochiPDF.exe`(ポータブル) が生成されます。インストール不要で使いたい場合はポータブル `.exe` をコピーして配布してください。
+ローカルで同等のものを作るには、`src-tauri/Microsoft.WebView2.FixedVersionRuntime.<ver>.x64/` に WebView2 Fixed Runtime を配置してから `npm run tauri:build -- --target x86_64-pc-windows-msvc --no-bundle` を実行し、生成された `MochiPDF.exe` と Runtime フォルダを zip 化してください。WebView2 Fixed Runtime は [Microsoft の WebView2 ページ](https://developer.microsoft.com/microsoft-edge/webview2/) または [westinyang/WebView2RuntimeArchive](https://github.com/westinyang/WebView2RuntimeArchive/releases) から取得できます(CI 使用バージョン: `133.0.3065.92`)。
 
-### B. GitHub Actions(`windows-latest`)で自動ビルド
+### macOS ビルド(`.github/workflows/macos-build.yml`)
 
-`.github/workflows/windows-build.yml` を含めており、`main` への push、`v*` タグの push、PR、手動 dispatch のいずれでも Windows ビルドが走ります。生成された MSI / NSIS / ポータブル `.exe` は GitHub Actions の Artifacts からダウンロードできます。`v*` タグを push した場合はドラフトリリースに自動添付されます。
+`macos-latest` で `tauri build --target aarch64-apple-darwin` を回し、Apple Silicon 用 `.dmg` を `MochiPDF-mac.dmg` として固定名で出力します。`v*` タグ push 時はドラフトリリースに自動添付。
 
-### Windows 固有の挙動
+> ⚠️ 現状 CI ではコード署名 / Notarization を行っていません。初回起動時に Gatekeeper の警告が出る場合は、`MochiPDF.app` を右クリック → 「開く」を選択してください。
+> ⚠️ Intel Mac は Rosetta 2 経由で動作します。ネイティブ Intel ビルドが必要なら `-target x86_64-apple-darwin` を追加で回す jobs を組んでください。
 
-- `.pdf` ファイルを「もちPDF で開く」できるよう、MSI/NSIS インストール時にファイル関連付けを登録します。
-- NSIS インストーラはユーザー単位インストール(管理者権限不要)です。インストール時に英語/日本語を選択できます。
-- MSI は en-US と ja-JP を同梱しています。
-- WebView2 ランタイムは **fixedRuntime モード**で同梱しています。インストール環境に WebView2 が無くても初回起動でダウンロードされず、追加セットアップ不要で動作します。
+## ランディングサイト(Vercel)
 
-### Windows ポータブル版(セットアップ不要)
+`website/` 配下にプロモーションサイト一式があり、ルートの `vercel.json` で `outputDirectory: "website"` に設定済みです。Vercel に GitHub 連携でインポートするだけで自動デプロイされます。詳しくは [`website/README.md`](./website/README.md) を参照。
 
-`MochiPDF_<ver>_x64-portable.zip` を解凍して `MochiPDF.exe` をダブルクリックすれば動きます。**インストーラの実行も WebView2 のインストールも不要**です。フォルダごと USB メモリ等にコピーすれば任意の Windows マシンで動作します(zip 内に WebView2 Fixed Runtime を同梱しているため、サイズは ~180MB になります)。
+サイトのボタンを押すと、以下が直接ダウンロードされます:
 
-ローカルでこの portable zip を作るには、`src-tauri/Microsoft.WebView2.FixedVersionRuntime.<ver>.x64/` に WebView2 Fixed Runtime を配置してから `tauri build` してください。WebView2 Fixed Runtime は [Microsoft の WebView2 ページ](https://developer.microsoft.com/microsoft-edge/webview2/) または [westinyang/WebView2RuntimeArchive](https://github.com/westinyang/WebView2RuntimeArchive/releases) から取得できます。CI ではバージョン `133.0.3065.92` を使用しています。
+- Windows: `https://github.com/Ryoama/mochipdf/releases/latest/download/MochiPDF-windows-portable.zip`
+- macOS: `https://github.com/Ryoama/mochipdf/releases/latest/download/MochiPDF-mac.dmg`
+- ソース: `https://github.com/Ryoama/mochipdf/archive/refs/heads/main.zip`
 
 ## ブランドカラー
 
