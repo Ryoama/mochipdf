@@ -13,7 +13,7 @@ const I18N = {
       cta_primary: "無料ダウンロード",
       cta_secondary: "機能を見る",
       meta: [
-        "Windows / macOS",
+        "Windows",
         "完全無料・広告なし",
         "オープンソース",
       ],
@@ -48,11 +48,6 @@ const I18N = {
         cpu: "Intel / AMD 64-bit", ram: "4GB 以上推奨",
         disk: "150MB の空き容量", net: "ダウンロード時のみ",
       },
-      mac: {
-        os: "macOS", ver: "macOS 12 Monterey 以降",
-        cpu: "Apple Silicon (M1 以降)", ram: "4GB 以上推奨",
-        disk: "180MB の空き容量", net: "ダウンロード時のみ",
-      },
       label: { os:"対応OS", cpu:"プロセッサ", ram:"メモリ", disk:"ディスク", net:"ネット環境" },
       download: "ダウンロード",
     },
@@ -65,10 +60,9 @@ const I18N = {
       desc: "登録不要、ライセンス不要。ダウンロードしたらすぐに使えます。",
       rows: [
         { os: "Windows ポータブル版", file: "MochiPDF-windows-portable.zip", size: "解凍して MochiPDF.exe を実行" },
-        { os: "macOS", file: "MochiPDF-mac.dmg", size: "Apple Silicon (Intel は Rosetta 2)" },
         { os: "ソースコード", file: "main.zip", size: "GitHub" },
       ],
-      checksum: "コード署名・ウイルス対策チェックは GitHub Actions のビルド情報を参照してください。",
+      checksum: "起動時に Windows SmartScreen の青い警告が出ても、「詳細情報」→「実行」で起動できます。詳しい手順は FAQ をご覧ください。",
       btn: "ダウンロード",
     },
     guide: {
@@ -117,9 +111,10 @@ const I18N = {
       sub: "よくいただく質問をまとめました。それでも解決しない場合はお問い合わせください。",
       items: [
         { q: "本当に無料ですか？", a: "はい。完全に無料でお使いいただけます。機能制限、利用期限、広告表示は一切ありません。開発の継続のため、寄付（Donation）はいつでも歓迎しています。" },
+        { q: "Windows で「PC が保護されました」と表示されて起動できません", a: "Windows SmartScreen が未署名アプリの起動をブロックしている状態です。MochiPDF はオープンソースで中身は GitHub で確認できます。回避手順は 2 ステップだけ — (1) 青いダイアログの中央にある「詳細情報」リンクをクリック、(2) ダイアログが広がって「実行」ボタンが表示されるので押す。一度許可すれば次回以降は警告が出ません(Windows が実行ファイル単位で記憶します)。" },
         { q: "ファイルはサーバに送信されますか？", a: "いいえ。もちPDFは全ての処理をお手元のPC内で完結させます。最初のダウンロード以外、PDFファイルやその他の情報が外部に送信されることはありません。" },
         { q: "商用利用はできますか？", a: "はい、商用利用も無料で可能です。ライセンス料は不要です。ソースコードは MIT ライセンスで公開しています。" },
-        { q: "Linux 版はありますか？", a: "現在は Windows と macOS のみの対応です。Linux 版は将来的に対応を検討中です。GitHub の Issue で要望を集めています。" },
+        { q: "Linux 版はありますか？", a: "現在は Windows のみの対応です。macOS / Linux 版は将来的に対応を検討中です。GitHub の Issue で要望を集めています。" },
         { q: "PDFのパスワード保護や編集はできますか？", a: "現在は閲覧と結合・分割・抽出・回転に特化しています。注釈の編集やパスワード設定は将来のバージョンで検討中です。" },
       ],
     },
@@ -153,7 +148,7 @@ const I18N = {
       cta_primary: "Download free",
       cta_secondary: "See features",
       meta: [
-        "Windows / macOS",
+        "Windows",
         "Free, ad-free",
         "Open source",
       ],
@@ -188,11 +183,6 @@ const I18N = {
         cpu: "Intel / AMD 64-bit", ram: "4GB or more",
         disk: "150MB free space", net: "Only for downloads",
       },
-      mac: {
-        os: "macOS", ver: "macOS 12 Monterey or later",
-        cpu: "Apple Silicon (M1 or later)", ram: "4GB or more",
-        disk: "180MB free space", net: "Only for downloads",
-      },
       label: { os:"OS", cpu:"Processor", ram:"Memory", disk:"Disk", net:"Network" },
       download: "Download",
     },
@@ -205,10 +195,9 @@ const I18N = {
       desc: "No sign-up. No license key. Download and run.",
       rows: [
         { os: "Windows portable", file: "MochiPDF-windows-portable.zip", size: "Unzip and run MochiPDF.exe" },
-        { os: "macOS", file: "MochiPDF-mac.dmg", size: "Apple Silicon (Intel via Rosetta 2)" },
         { os: "Source code", file: "main.zip", size: "GitHub" },
       ],
-      checksum: "Code-signing & virus-scan results are visible from the GitHub Actions build artifacts.",
+      checksum: "If you see a blue Windows SmartScreen warning on launch, click \"More info\" → \"Run anyway\" to start the app. See the FAQ for the full walk-through.",
       btn: "Download",
     },
     guide: {
@@ -257,9 +246,10 @@ const I18N = {
       sub: "If your question isn't here, drop us a line — we read everything.",
       items: [
         { q: "Is it really free?", a: "Yes — completely free. No feature limits, no expiration, no ads, ever. Donations are appreciated but not required." },
+        { q: "Windows says \"Windows protected your PC\" and won't run the app", a: "That's Windows SmartScreen blocking an unsigned executable. MochiPDF is open source — the entire source tree is on GitHub. Two-step workaround: (1) in the blue dialog, click the small \"More info\" link in the middle, (2) a \"Run anyway\" button appears — click it. Windows remembers your decision per-executable, so the warning won't appear again on subsequent launches." },
         { q: "Are my files uploaded to a server?", a: "No. Everything happens on your computer. The only network traffic is the initial download." },
         { q: "Can I use it commercially?", a: "Yes, commercial use is free too. The source is MIT-licensed and on GitHub." },
-        { q: "Is there a Linux version?", a: "Currently Windows and macOS only. Linux is on the roadmap — vote on the GitHub issue if you'd like it." },
+        { q: "Is there a Linux version?", a: "Windows only for now. macOS and Linux builds are on the roadmap — vote on the GitHub issue if you'd like them." },
         { q: "Password protection or PDF editing?", a: "We focus on viewing, merge, split, extract and rotate today. Annotations and password tools are planned for a future release." },
       ],
     },
