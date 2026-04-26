@@ -62,7 +62,7 @@ const I18N = {
         { os: "Windows ポータブル版", file: "MochiPDF-windows-portable.zip", size: "解凍して MochiPDF.exe を実行" },
         { os: "ソースコード", file: "main.zip", size: "GitHub" },
       ],
-      checksum: "コード署名・ウイルス対策チェックは GitHub Actions のビルド情報を参照してください。",
+      checksum: "起動時に Windows SmartScreen の青い警告が出ても、「詳細情報」→「実行」で起動できます。詳しい手順は FAQ をご覧ください。",
       btn: "ダウンロード",
     },
     guide: {
@@ -111,6 +111,7 @@ const I18N = {
       sub: "よくいただく質問をまとめました。それでも解決しない場合はお問い合わせください。",
       items: [
         { q: "本当に無料ですか？", a: "はい。完全に無料でお使いいただけます。機能制限、利用期限、広告表示は一切ありません。開発の継続のため、寄付（Donation）はいつでも歓迎しています。" },
+        { q: "Windows で「PC が保護されました」と表示されて起動できません", a: "Windows SmartScreen が未署名アプリの起動をブロックしている状態です。MochiPDF はオープンソースで中身は GitHub で確認できますが、コード署名証明書の発行(Azure Trusted Signing の本人確認)を待っている段階です。それまでの回避手順 — (1) 青いダイアログの中央にある「詳細情報」リンクをクリック、(2) ダイアログが広がって「実行」ボタンが表示されるので押す。次回以降は警告が出なくなります(同じ実行ファイルに対しては Windows が記憶します)。証明書導入後はこの警告自体が表示されなくなります。" },
         { q: "ファイルはサーバに送信されますか？", a: "いいえ。もちPDFは全ての処理をお手元のPC内で完結させます。最初のダウンロード以外、PDFファイルやその他の情報が外部に送信されることはありません。" },
         { q: "商用利用はできますか？", a: "はい、商用利用も無料で可能です。ライセンス料は不要です。ソースコードは MIT ライセンスで公開しています。" },
         { q: "Linux 版はありますか？", a: "現在は Windows のみの対応です。macOS / Linux 版は将来的に対応を検討中です。GitHub の Issue で要望を集めています。" },
@@ -196,7 +197,7 @@ const I18N = {
         { os: "Windows portable", file: "MochiPDF-windows-portable.zip", size: "Unzip and run MochiPDF.exe" },
         { os: "Source code", file: "main.zip", size: "GitHub" },
       ],
-      checksum: "Code-signing & virus-scan results are visible from the GitHub Actions build artifacts.",
+      checksum: "If you see a blue Windows SmartScreen warning on launch, click \"More info\" → \"Run anyway\" to start the app. See the FAQ for the full walk-through.",
       btn: "Download",
     },
     guide: {
@@ -245,6 +246,7 @@ const I18N = {
       sub: "If your question isn't here, drop us a line — we read everything.",
       items: [
         { q: "Is it really free?", a: "Yes — completely free. No feature limits, no expiration, no ads, ever. Donations are appreciated but not required." },
+        { q: "Windows says \"Windows protected your PC\" and won't run the app", a: "That's Windows SmartScreen blocking an unsigned executable. MochiPDF is open source — the entire source tree is on GitHub — but we're still waiting on the identity validation for our code signing certificate (Azure Trusted Signing). Until then: (1) in the blue dialog, click the small \"More info\" link in the middle, (2) a \"Run anyway\" button appears — click it. Windows remembers your decision per executable, so the warning won't appear again on subsequent launches. Once the certificate is in place, the warning will stop appearing entirely." },
         { q: "Are my files uploaded to a server?", a: "No. Everything happens on your computer. The only network traffic is the initial download." },
         { q: "Can I use it commercially?", a: "Yes, commercial use is free too. The source is MIT-licensed and on GitHub." },
         { q: "Is there a Linux version?", a: "Windows only for now. macOS and Linux builds are on the roadmap — vote on the GitHub issue if you'd like them." },
