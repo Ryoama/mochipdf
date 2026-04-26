@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://mochipdf.vercel.app/sitemap.xml
