@@ -10,6 +10,7 @@ const LINKS = {
   releasesLatest: "https://github.com/Ryoama/mochipdf/releases/latest",
   releases: "https://github.com/Ryoama/mochipdf/releases",
   issues: "https://github.com/Ryoama/mochipdf/issues",
+  sponsors: "https://github.com/sponsors/Ryoama",
   sourceZip: "https://github.com/Ryoama/mochipdf/archive/refs/heads/main.zip",
   winPortable: `${DL_BASE}/MochiPDF-windows-portable.zip`,
   macApp: `${DL_BASE}/MochiPDF-mac.dmg`,
@@ -432,7 +433,7 @@ function FAQ({ t }) {
             <h3>{t.donate.title}</h3>
             <p>{t.donate.d}</p>
             <div className="actions">
-              <a className="btn btn-primary" href={LINKS.repo} target="_blank" rel="noopener"><Ic.Heart size={14}/> {t.donate.btn1}</a>
+              <a className="btn btn-primary" href={LINKS.sponsors} target="_blank" rel="noopener"><Ic.Heart size={14}/> {t.donate.btn1}</a>
               <a className="btn btn-secondary" href={LINKS.repo} target="_blank" rel="noopener"><Ic.Github size={14}/> {t.donate.btn2}</a>
             </div>
           </div>
