@@ -9,7 +9,7 @@ const I18N = {
       title_a: "もちもち",
       title_b: "PDF",
       title_c: "編集！",
-      lede: "閲覧も、結合も、分割も。やわらかい操作感で、誰でもすぐに使えるPDFツール。インストール3分、登録不要、広告なし。",
+      lede: "閲覧も、結合も、分割も。やわらかい操作感で、誰でもすぐに使えるPDFツール。ダウンロードして即起動、登録不要、広告なし。",
       cta_primary: "無料ダウンロード",
       cta_secondary: "機能を見る",
       meta: [
@@ -54,14 +54,13 @@ const I18N = {
         disk: "180MB の空き容量", net: "ダウンロード時のみ",
       },
       label: { os:"対応OS", cpu:"プロセッサ", ram:"メモリ", disk:"ディスク", net:"ネット環境" },
-      install: "インストーラ",
-      portable: "ポータブル版",
+      download: "ダウンロード",
     },
     download: {
       eyebrow: "DOWNLOAD",
       title: "今すぐ、",
       title_accent: "無料で。",
-      sub: "ボタンを押すとそのままダウンロードが始まります(リリース未公開時はリリースページを開きます)。",
+      sub: "ボタンを押すとそのままダウンロードが始まります。",
       headline: "もちPDF",
       desc: "登録不要、ライセンス不要。ダウンロードしたらすぐに使えます。",
       rows: [
@@ -150,7 +149,7 @@ const I18N = {
       title_a: "Mochi-soft",
       title_b: "PDF",
       title_c: "editing!",
-      lede: "View, merge and split — with the softest UX you've ever felt. Install in 3 minutes. No sign-up. No ads.",
+      lede: "View, merge and split — with the softest UX you've ever felt. Download and run — no install, no sign-up, no ads.",
       cta_primary: "Download free",
       cta_secondary: "See features",
       meta: [
@@ -195,14 +194,13 @@ const I18N = {
         disk: "180MB free space", net: "Only for downloads",
       },
       label: { os:"OS", cpu:"Processor", ram:"Memory", disk:"Disk", net:"Network" },
-      install: "Installer",
-      portable: "Portable",
+      download: "Download",
     },
     download: {
       eyebrow: "DOWNLOAD",
       title: "Get it ",
       title_accent: "now, free.",
-      sub: "Each button starts the download right away (opens the releases page if no release has shipped yet).",
+      sub: "Each button starts the download right away.",
       headline: "MochiPDF",
       desc: "No sign-up. No license key. Download and run.",
       rows: [
