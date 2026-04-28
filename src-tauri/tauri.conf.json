@@ -75,8 +75,7 @@
     ],
     "windows": {
       "webviewInstallMode": {
-        "type": "fixedRuntime",
-        "path": "./Microsoft.WebView2.FixedVersionRuntime.133.0.3065.92.x64/"
+        "type": "downloadBootstrapper"
       },
       "wix": {
         "language": ["en-US", "ja-JP"]
