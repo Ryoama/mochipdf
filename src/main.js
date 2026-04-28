@@ -632,7 +632,7 @@ async function refreshEditorGrid() {
       "data-page": i,
       title: "ドラッグ&ドロップで並べ替え",
       "aria-label": `ページ ${i + 1}`,
-      draggable: true,
+      draggable: "true",
     });
     const canvasWrap = el("div", { class: "tile-canvas-wrap" });
     const canvas = el("canvas");
@@ -1032,7 +1032,7 @@ function refreshMergeList() {
   for (let i = 0; i < mergeFiles.length; i++) {
     const f = mergeFiles[i];
     const item = el("div", {
-      class: "merge-item", "data-id": f.id, draggable: true,
+      class: "merge-item", "data-id": f.id, draggable: "true",
     },
       el("span", { class: "merge-handle" }, "≡"),
       el("span", { class: "merge-name" }, `${i + 1}. ${f.name}`),
