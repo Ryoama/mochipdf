@@ -43,11 +43,11 @@ npm run tauri:dev
 | Windows | `MochiPDF-windows-portable.zip` | 解凍して `MochiPDF.exe` をダブルクリックで起動。WebView2 はシステムにインストール済みのものを利用(未インストール環境では初回起動時に Microsoft からブートストラッパが自動取得されます)。zip は数 MB |
 | macOS | `MochiPDF-mac.dmg` | Apple Silicon (M シリーズ) 用。マウントして `MochiPDF.app` を Applications にドラッグ。Intel Mac では Rosetta 2 経由で動作 |
 
-ファイル名にはバージョン番号を入れていないため、ランディングサイトから `https://github.com/Ryoama/mochipdf/releases/latest/download/<ファイル名>` で常に最新版を直リンクできます。
+ファイル名にはバージョン番号を入れていないため、ランディングサイトから `https://github.com/Ryoama/mochipdf/releases/download/latest/<ファイル名>` で常に最新版を直リンクできます(`main` への push ごとに `latest` プレリリースが上書きされる仕組みです — 詳細は下記 CI セクション)。
 
 ### Windows ビルド(`.github/workflows/windows-build.yml`)
 
-`windows-latest` で `tauri build --no-bundle` を回し、出力された `MochiPDF.exe` を `MochiPDF-windows-portable.zip` にまとめます。`v*` タグ push 時はドラフトリリースに自動添付。
+`windows-latest` で `tauri build --no-bundle` を回し、出力された `MochiPDF.exe` を `MochiPDF-windows-portable.zip` にまとめます。`main` への push ごとに `latest` タグのプレリリースを上書きし、`v*` タグ push 時は対応するバージョン付きリリースに添付します。
 
 WebView2 ランタイムは zip に同梱せず、`tauri.conf.json` の `webviewInstallMode: downloadBootstrapper` でユーザー環境のものを利用します(Windows 11 と最新の Windows 10 はプリインストール済み)。これにより zip サイズを ~180MB から数 MB に削減しています。
 
@@ -55,7 +55,7 @@ WebView2 ランタイムは zip に同梱せず、`tauri.conf.json` の `webview
 
 ### macOS ビルド(`.github/workflows/macos-build.yml`)
 
-`macos-latest` で `tauri build --target aarch64-apple-darwin` を回し、Apple Silicon 用 `.dmg` を `MochiPDF-mac.dmg` として固定名で出力します。`v*` タグ push 時はドラフトリリースに自動添付。
+`macos-latest` で `tauri build --target aarch64-apple-darwin` を回し、Apple Silicon 用 `.dmg` を `MochiPDF-mac.dmg` として固定名で出力します。`main` への push ごとに `latest` タグのプレリリースを上書きし、`v*` タグ push 時は対応するバージョン付きリリースに添付します。
 
 > ⚠️ 現状 CI ではコード署名 / Notarization を行っていません。初回起動時に Gatekeeper の警告が出る場合は、`MochiPDF.app` を右クリック → 「開く」を選択してください。
 > ⚠️ Intel Mac は Rosetta 2 経由で動作します。ネイティブ Intel ビルドが必要なら `-target x86_64-apple-darwin` を追加で回す jobs を組んでください。
@@ -66,8 +66,8 @@ WebView2 ランタイムは zip に同梱せず、`tauri.conf.json` の `webview
 
 サイトのボタンを押すと、以下が直接ダウンロードされます:
 
-- Windows: `https://github.com/Ryoama/mochipdf/releases/latest/download/MochiPDF-windows-portable.zip`
-- macOS: `https://github.com/Ryoama/mochipdf/releases/latest/download/MochiPDF-mac.dmg`
+- Windows: `https://github.com/Ryoama/mochipdf/releases/download/latest/MochiPDF-windows-portable.zip`
+- macOS: `https://github.com/Ryoama/mochipdf/releases/download/latest/MochiPDF-mac.dmg`
 - ソース: `https://github.com/Ryoama/mochipdf/archive/refs/heads/main.zip`
 
 ## ブランドカラー
