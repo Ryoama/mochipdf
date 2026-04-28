@@ -101,10 +101,23 @@ jobs:
           path: release-stage/MochiPDF-mac.dmg
           if-no-files-found: error
 
-      - name: Attach to GitHub Release
+      - name: Attach to versioned GitHub Release (tags)
         if: success() && startsWith(github.ref, 'refs/tags/v')
         uses: softprops/action-gh-release@v2
         with:
           files: release-stage/*
           draft: false
+          fail_on_unmatched_files: false
+
+      - name: Update rolling "latest" prerelease (main)
+        if: success() && github.event_name == 'push' && github.ref == 'refs/heads/main'
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: latest
+          name: Latest build (main)
+          body: |
+            Rolling build from the latest commit on `main` (${{ github.sha }}).
+            For stable releases, see the versioned `v*` tags.
+          prerelease: true
+          files: release-stage/*
           fail_on_unmatched_files: false

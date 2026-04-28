@@ -1,10 +1,11 @@
 // Components for もちPDF site
 const { useState, useEffect, useRef } = React;
 
-// Stable, version-free download URLs. The CI ships these exact filenames every
-// release, so /releases/latest/download/<file> 302-redirects to the real asset
-// and the browser starts the download immediately.
-const DL_BASE = "https://github.com/Ryoama/mochipdf/releases/latest/download";
+// Stable, version-free download URLs. The CI publishes a rolling prerelease at
+// the moving `latest` tag on every push to main, so /releases/download/latest/
+// always 302-redirects to the freshest asset (versioned `v*` tags coexist as
+// proper releases).
+const DL_BASE = "https://github.com/Ryoama/mochipdf/releases/download/latest";
 const LINKS = {
   repo: "https://github.com/Ryoama/mochipdf",
   releasesLatest: "https://github.com/Ryoama/mochipdf/releases/latest",
